@@ -2784,25 +2784,38 @@ router.put(
 
 router.get(
   '/get-all-user2-specific-posts',
-
   asyncErrCatcher(async (req, res) => {
     try {
       const userState = req.query.state
 
       const results = await Ioi_comp1.aggregate([
-        // Unwind only the state_tc arrays
+        // Unwind each array field
         {
-          $unwind: `$no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc`
+          $unwind: {
+            path: '$no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc',
+            preserveNullAndEmptyArrays: true
+          }
         },
-        { $unwind: `$no_of_training_programs_delivered_monitored.state_tc` },
         {
-          $unwind: `$no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc`
+          $unwind: {
+            path: '$no_of_training_programs_delivered_monitored.state_tc',
+            preserveNullAndEmptyArrays: true
+          }
         },
         {
-          $unwind: `$no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc`
+          $unwind: {
+            path: '$no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $unwind: {
+            path: '$no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc',
+            preserveNullAndEmptyArrays: true
+          }
         },
 
-        // Match documents where the state matches the user's state
+        // Filter documents where the state matches the user's state
         {
           $match: {
             $or: [
@@ -2826,26 +2839,106 @@ router.get(
           }
         },
 
-        // Group back the results to reassemble the documents
+        // Regroup the results to reassemble the documents
         {
           $group: {
             _id: '$_id',
             no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership:
               {
-                $push:
-                  '$no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc'
+                $push: {
+                  $cond: [
+                    {
+                      $eq: [
+                        '$no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc.state',
+                        userState
+                      ]
+                    },
+                    '$no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc',
+                    '$$REMOVE'
+                  ]
+                }
               },
             no_of_training_programs_delivered_monitored: {
-              $push: '$no_of_training_programs_delivered_monitored.state_tc'
+              $push: {
+                $cond: [
+                  {
+                    $eq: [
+                      '$no_of_training_programs_delivered_monitored.state_tc.state',
+                      userState
+                    ]
+                  },
+                  '$no_of_training_programs_delivered_monitored.state_tc',
+                  '$$REMOVE'
+                ]
+              }
             },
             no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth:
               {
-                $push:
-                  '$no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc'
+                $push: {
+                  $cond: [
+                    {
+                      $eq: [
+                        '$no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc.state',
+                        userState
+                      ]
+                    },
+                    '$no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc',
+                    '$$REMOVE'
+                  ]
+                }
               },
             no_of_fully_functioning_upgraded_workshops_in_supported_tc: {
-              $push:
-                '$no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc'
+              $push: {
+                $cond: [
+                  {
+                    $eq: [
+                      '$no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc.state',
+                      userState
+                    ]
+                  },
+                  '$no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc',
+                  '$$REMOVE'
+                ]
+              }
+            }
+          }
+        },
+
+        // Project to filter out empty arrays
+        {
+          $project: {
+            no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership:
+              {
+                $filter: {
+                  input:
+                    '$no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership',
+                  as: 'item',
+                  cond: { $ne: ['$$item', null] }
+                }
+              },
+            no_of_training_programs_delivered_monitored: {
+              $filter: {
+                input: '$no_of_training_programs_delivered_monitored',
+                as: 'item',
+                cond: { $ne: ['$$item', null] }
+              }
+            },
+            no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth:
+              {
+                $filter: {
+                  input:
+                    '$no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth',
+                  as: 'item',
+                  cond: { $ne: ['$$item', null] }
+                }
+              },
+            no_of_fully_functioning_upgraded_workshops_in_supported_tc: {
+              $filter: {
+                input:
+                  '$no_of_fully_functioning_upgraded_workshops_in_supported_tc',
+                as: 'item',
+                cond: { $ne: ['$$item', null] }
+              }
             }
           }
         }
