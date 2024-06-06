@@ -96,16 +96,11 @@ router.post(
         sch_ideas_project_team_established,
         no_of_mous_signed_with_industry_partners,
         no_of_times_ciu_met_over_past_year,
-        ideas_tkn,
+        tc_name,
+        jurisdiction,
+        email,
         state
       } = req.body
-      const verified_user = jwt.verify(ideas_tkn, process.env.JWT_SECRET_PASS)
-
-      console.log('user:', verified_user)
-
-      const tc_name = verified_user.tc_name
-      const jurisdiction = verified_user.jurisdiction
-      const email_of_data_entry_personnel = verified_user.email
 
       const new_tc_data = {}
 
@@ -129,7 +124,7 @@ router.post(
 
       new_tc_data.tc_name = tc_name
       new_tc_data.state = state
-      new_tc_data.email_of_data_entry_personnel = email_of_data_entry_personnel
+      new_tc_data.email_of_data_entry_personnel = email
       if (req.files && req.files[0] && sch_ideas_project_team_established) {
         new_tc_data.sch_ideas_project_team_established.report_pdf =
           req.files[0].filename
