@@ -90,20 +90,22 @@ router.post(
 router.post(
   '/make-post-for-no-of-supported-tc',
   upload.array('pdfs'),
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const {
         sch_ideas_project_team_established,
         no_of_mous_signed_with_industry_partners,
         no_of_times_ciu_met_over_past_year,
-
+        ideas_tkn,
         state
       } = req.body
+      const verified_user = jwt.verify(ideas_tkn, process.env.JWT_SECRET_PASS)
 
-      const tc_name = req.user.tc_name
-      const jurisdiction = req.user.jurisdiction
-      const email_of_data_entry_personnel = req.user.email
+      console.log('user:', verified_user)
+
+      const tc_name = verified_user.tc_name
+      const jurisdiction = verified_user.jurisdiction
+      const email_of_data_entry_personnel = verified_user.email
 
       const new_tc_data = {}
 
@@ -606,11 +608,14 @@ router.post(
   asyncErrCatcher(async (req, res) => {
     try {
       const new_tc_data = req.body
-
-      new_tc_data.no_of_workshops_renovated = Number(
-        new_tc_data.no_of_workshops_renovated
-      )
-
+      new_tc_data.jurisdiction = req.user.jurisdiction
+      new_tc_data.email_of_data_entry_personnel = req.user.email
+      new_tc_data.tc_name = req.user.tc_name
+      if (new_tc_data.no_of_workshops_renovated) {
+        new_tc_data.no_of_workshops_renovated = Number(
+          new_tc_data.no_of_workshops_renovated
+        )
+      }
       if (new_tc_data.initial_disbursement_of_250kusd_received) {
         new_tc_data.initial_disbursement_of_250kusd_received = {
           value: new_tc_data.initial_disbursement_of_250kusd_received
@@ -637,6 +642,7 @@ router.post(
       }
 
       if (
+        req.files &&
         req.files[0] &&
         new_tc_data.initial_disbursement_of_250kusd_received
       ) {
@@ -644,6 +650,7 @@ router.post(
           req.files[0].filename
       }
       if (
+        req.files &&
         req.files[1] &&
         new_tc_data.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       ) {
@@ -651,6 +658,7 @@ router.post(
           req.files[1].filename
       }
       if (
+        req.files &&
         req.files[2] &&
         new_tc_data.no_of_ttis_trained_on_the_use_of_newly_installed_tools
       ) {
@@ -701,21 +709,21 @@ router.post(
       }
 
       if (existingDoc) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -761,21 +769,21 @@ router.post(
           newDoc.no_of_fully_functioning_upgraded_workshops_in_supported_tc
       })
     } catch (err) {
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[2]) {
+      if (req.files && req.files[2]) {
         fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
