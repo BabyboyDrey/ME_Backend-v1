@@ -1335,21 +1335,21 @@ router.put(
 
       const parentDocument = await Ioi_comp1.findOne(query)
       if (!parentDocument) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -1369,21 +1369,21 @@ router.put(
       )
 
       if (!subdocument) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -1500,21 +1500,21 @@ router.put(
         subdocument
       })
     } catch (err) {
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[2]) {
+      if (req.files && req.files[2]) {
         fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
@@ -1545,14 +1545,14 @@ router.put(
 
       const parentDocument = await Ioi_comp1.findOne(query)
       if (!parentDocument) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -1569,14 +1569,14 @@ router.put(
       )
 
       if (!subdocument) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -1606,7 +1606,7 @@ router.put(
         Number(items_to_add.no_of_internship_arrangements) +
         Number(items_to_add.no_of_industry_partners)
 
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         if (subdocument.latest_tc_status_report_pdf) {
           fs.unlink(
             `uploads/${subdocument.latest_tc_status_report_pdf}`,
@@ -1619,7 +1619,7 @@ router.put(
         }
         subdocument.latest_tc_status_report_pdf = req.files[0].filename
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         if (subdocument.attendance_sheet_pdf) {
           fs.unlink(
             `uploads/${subdocument.attendance_sheet_pdf}`,
@@ -1641,14 +1641,14 @@ router.put(
         subdocument
       })
     } catch (err) {
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
@@ -1680,21 +1680,21 @@ router.put(
 
       const parentDocument = await Ioi_comp1.findOne(query).maxTimeMS(20000)
       if (!parentDocument) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -1714,21 +1714,21 @@ router.put(
       )
 
       if (!subdocument) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -1750,7 +1750,11 @@ router.put(
         subdocument.count = 0
       }
 
-      if (req.files[0] && items.gbv_sensitization_conducted_by_the_school) {
+      if (
+        req.files &&
+        req.files[0] &&
+        items.gbv_sensitization_conducted_by_the_school
+      ) {
         if (
           subdocument.gbv_sensitization_conducted_by_the_school
             .sensitization_pdf
@@ -1768,7 +1772,7 @@ router.put(
           req.files[0].filename
         delete items.gbv_sensitization_conducted_by_the_school
       }
-      if (req.files[1] && items.gbv_policy_published_by_school) {
+      if (req.files && req.files[1] && items.gbv_policy_published_by_school) {
         if (subdocument.gbv_policy_published_by_school.school_gbv_policy_pdf) {
           const filePath = `uploads/${subdocument.gbv_policy_published_by_school.school_gbv_policy_pdf}`
           checkAndDeleteFile(filePath, err => {
@@ -1783,7 +1787,7 @@ router.put(
           req.files[1].filename
         delete items.gbv_policy_published_by_school
       }
-      if (req.files[2]) {
+      if (req.files && req.files[2]) {
         if (subdocument.reports_showing_addressed_complaints_box_pdf) {
           const filePath = `uploads/${subdocument.reports_showing_addressed_complaints_box_pdf}`
           checkAndDeleteFile(filePath, err => {
@@ -1805,21 +1809,21 @@ router.put(
         subdocument
       })
     } catch (err) {
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[2]) {
+      if (req.files && req.files[2]) {
         fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
@@ -1851,21 +1855,21 @@ router.put(
 
       const parentDocument = await Ioi_comp1.findOne(query).maxTimeMS(20000)
       if (!parentDocument) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -1883,21 +1887,21 @@ router.put(
       )
 
       if (!subdocument) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -1964,7 +1968,11 @@ router.put(
         items.fulfilled = 'no'
       }
 
-      if (req.files[0] && items.initial_disbursement_of_250kusd_received) {
+      if (
+        req.files &&
+        req.files[0] &&
+        items.initial_disbursement_of_250kusd_received
+      ) {
         if (
           subdocument.initial_disbursement_of_250kusd_received
             .doc_confirming_disbursment_received_pdf
@@ -1983,6 +1991,7 @@ router.put(
         delete items.initial_disbursement_of_250kusd_received
       }
       if (
+        req.files &&
         req.files[1] &&
         items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       ) {
@@ -2005,6 +2014,7 @@ router.put(
         delete items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       }
       if (
+        req.files &&
         req.files[2] &&
         items.no_of_ttis_trained_on_the_use_of_newly_installed_tools
       ) {
@@ -2035,21 +2045,21 @@ router.put(
         subdocument
       })
     } catch (err) {
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[2]) {
+      if (req.files && req.files[2]) {
         fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
@@ -2065,7 +2075,6 @@ router.put(
 
 router.delete(
   '/delete-post-no-of-supported-tc/:post_id',
-  user4Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const jurisdiction = req.query.jurisdiction
@@ -2161,7 +2170,6 @@ router.delete(
 
 router.delete(
   '/delete-post-no-of-training-programs-delivered-monitored/:post_id',
-  user4Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const jurisdiction = req.query.jurisdiction
@@ -2237,7 +2245,6 @@ router.delete(
 
 router.delete(
   '/delete-post-no-of-supported-tc-with-reporting-and-referral-mechanisms-for-gbv-affected-youth/:post_id',
-  user4Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const jurisdiction = req.query.jurisdiction
@@ -2328,7 +2335,6 @@ router.delete(
 
 router.delete(
   '/delete-post-no-of-fully-functioning-upgraded-workshops-in-supported-tc/:post_id',
-  user4Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const jurisdiction = req.query.jurisdiction
@@ -2427,16 +2433,15 @@ router.delete(
 
 router.get(
   '/get-post-for-no-of-supported-tc-by-tc',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       let found_post
-      if (req.user.jurisdiction === 'federal') {
+      if (req.query.jurisdiction === 'federal') {
         found_post = await Ioi_comp1.findOne({
           'no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.federal_tc':
             {
               $elemMatch: {
-                tc_name: req.user.tc_name
+                tc_name: req.query.tc_name
               }
             }
         }).maxTimeMS(10000)
@@ -2445,7 +2450,7 @@ router.get(
           'no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc':
             {
               $elemMatch: {
-                tc_name: req.user.tc_name
+                tc_name: req.query.tc_name
               }
             }
         }).maxTimeMS(10000)
@@ -2456,15 +2461,15 @@ router.get(
       }
 
       let tc_post
-      if (req.user.jurisdiction === 'federal') {
+      if (req.query.jurisdiction === 'federal') {
         tc_post =
           found_post.no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.federal_tc.find(
-            post => post.tc_name === req.user.tc_name
+            post => post.tc_name === req.query.tc_name
           )
       } else {
         tc_post =
           found_post.no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc.find(
-            post => post.tc_name === req.user.tc_name
+            post => post.tc_name === req.query.tc_name
           )
       }
 
@@ -2480,15 +2485,14 @@ router.get(
 
 router.get(
   '/get-post-no-of-training-programs-delivered-monitored-by-tc',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       let found_post
-      if (req.user.jurisdiction === 'federal') {
+      if (req.query.jurisdiction === 'federal') {
         found_post = await Ioi_comp1.findOne({
           'no_of_training_programs_delivered_monitored.federal_tc': {
             $elemMatch: {
-              tc_name: req.user.tc_name
+              tc_name: req.query.tc_name
             }
           }
         }).maxTimeMS(10000)
@@ -2496,7 +2500,7 @@ router.get(
         found_post = await Ioi_comp1.findOne({
           'no_of_training_programs_delivered_monitored.state_tc': {
             $elemMatch: {
-              tc_name: req.user.tc_name
+              tc_name: req.query.tc_name
             }
           }
         }).maxTimeMS(10000)
@@ -2507,15 +2511,15 @@ router.get(
       }
 
       let tc_post
-      if (req.user.jurisdiction === 'federal') {
+      if (req.query.jurisdiction === 'federal') {
         tc_post =
           found_post.no_of_training_programs_delivered_monitored.federal_tc.find(
-            post => post.tc_name === req.user.tc_name
+            post => post.tc_name === req.query.tc_name
           )
       } else {
         tc_post =
           found_post.no_of_training_programs_delivered_monitored.state_tc.find(
-            post => post.tc_name === req.user.tc_name
+            post => post.tc_name === req.query.tc_name
           )
       }
 
@@ -2531,16 +2535,15 @@ router.get(
 
 router.get(
   '/get-post-no-of-supported-tc-with-reporting-and-referral-mechanisms-for-gbv-affected-youth-by-tc',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       let found_post
-      if (req.user.jurisdiction === 'federal') {
+      if (req.query.jurisdiction === 'federal') {
         found_post = await Ioi_comp1.findOne({
           'no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.federal_tc':
             {
               $elemMatch: {
-                tc_name: req.user.tc_name
+                tc_name: req.query.tc_name
               }
             }
         }).maxTimeMS(10000)
@@ -2549,7 +2552,7 @@ router.get(
           'no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc':
             {
               $elemMatch: {
-                tc_name: req.user.tc_name
+                tc_name: req.query.tc_name
               }
             }
         }).maxTimeMS(10000)
@@ -2560,15 +2563,15 @@ router.get(
       }
 
       let tc_post
-      if (req.user.jurisdiction === 'federal') {
+      if (req.query.jurisdiction === 'federal') {
         tc_post =
           found_post.no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.federal_tc.find(
-            post => post.tc_name === req.user.tc_name
+            post => post.tc_name === req.query.tc_name
           )
       } else {
         tc_post =
           found_post.no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc.find(
-            post => post.tc_name === req.user.tc_name
+            post => post.tc_name === req.query.tc_name
           )
       }
 
@@ -2583,16 +2586,15 @@ router.get(
 )
 router.get(
   '/get-post-no-of-fully-functioning-upgraded-workshops-in-supported-tc-by-tc',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       let found_post
-      if (req.user.jurisdiction === 'federal') {
+      if (req.query.jurisdiction === 'federal') {
         found_post = await Ioi_comp1.findOne({
           'no_of_fully_functioning_upgraded_workshops_in_supported_tc.federal_tc':
             {
               $elemMatch: {
-                tc_name: req.user.tc_name
+                tc_name: req.query.tc_name
               }
             }
         }).maxTimeMS(10000)
@@ -2601,7 +2603,7 @@ router.get(
           'no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc':
             {
               $elemMatch: {
-                tc_name: req.user.tc_name
+                tc_name: req.query.tc_name
               }
             }
         }).maxTimeMS(10000)
@@ -2612,15 +2614,15 @@ router.get(
       }
 
       let tc_post
-      if (req.user.jurisdiction === 'federal') {
+      if (req.query.jurisdiction === 'federal') {
         tc_post =
           found_post.no_of_fully_functioning_upgraded_workshops_in_supported_tc.federal_tc.find(
-            post => post.tc_name === req.user.tc_name
+            post => post.tc_name === req.query.tc_name
           )
       } else {
         tc_post =
           found_post.no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc.find(
-            post => post.tc_name === req.user.tc_name
+            post => post.tc_name === req.query.tc_name
           )
       }
 
@@ -2638,12 +2640,11 @@ router.get(
 
 router.put(
   '/update-status-for-no-of-supported-tc/:id',
-  user2Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
       const post_exists = await Ioi_comp1.findOne({
-        [`no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.${req.user.jurisdiction}_tc`]:
+        [`no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.${items.jurisdiction}_tc`]:
           {
             $elemMatch: {
               _id: req.params.id
@@ -2657,7 +2658,7 @@ router.put(
       const subDocs =
         post_exists
           .no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership[
-          `${req.user.jurisdiction}_tc`
+          `${items.jurisdiction}_tc`
         ]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
       subDoc.status = items.status
@@ -2675,12 +2676,11 @@ router.put(
 
 router.put(
   '/update-status-for-no-of-training-programs-delivered-monitored/:id',
-  user2Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
       const post_exists = await Ioi_comp1.findOne({
-        [`no_of_training_programs_delivered_monitored.${req.user.jurisdiction}_tc`]:
+        [`no_of_training_programs_delivered_monitored.${items.jurisdiction}_tc`]:
           {
             $elemMatch: {
               _id: req.params.id
@@ -2693,7 +2693,7 @@ router.put(
       }
       const subDocs =
         post_exists.no_of_training_programs_delivered_monitored[
-          `${req.user.jurisdiction}_tc`
+          `${items.jurisdiction}_tc`
         ]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
       subDoc.status = items.status
@@ -2711,12 +2711,11 @@ router.put(
 
 router.put(
   '/update-status-for-no-of-supported-tc-with-reporting-and-referral-mechanisms-for-gbv-affected-youth/:id',
-  user2Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
       const post_exists = await Ioi_comp1.findOne({
-        [`no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.${req.user.jurisdiction}_tc`]:
+        [`no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.${items.jurisdiction}_tc`]:
           {
             $elemMatch: {
               _id: req.params.id
@@ -2730,7 +2729,7 @@ router.put(
       const subDocs =
         post_exists
           .no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth[
-          `${req.user.jurisdiction}_tc`
+          `${items.jurisdiction}_tc`
         ]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
       subDoc.status = items.status
@@ -2748,12 +2747,11 @@ router.put(
 
 router.put(
   '/update-status-for-no_of_fully_functioning_upgraded_workshops_in_supported_tc/:id',
-  user2Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
       const post_exists = await Ioi_comp1.findOne({
-        [`no_of_fully_functioning_upgraded_workshops_in_supported_tc.${req.user.jurisdiction}_tc`]:
+        [`no_of_fully_functioning_upgraded_workshops_in_supported_tc.${items.jurisdiction}_tc`]:
           {
             $elemMatch: {
               _id: req.params.id
@@ -2766,7 +2764,7 @@ router.put(
       }
       const subDocs =
         post_exists.no_of_fully_functioning_upgraded_workshops_in_supported_tc[
-          `${req.user.jurisdiction}_tc`
+          `${items.jurisdiction}_tc`
         ]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
       subDoc.status = items.status
@@ -2786,11 +2784,10 @@ router.put(
 
 router.get(
   '/get-all-user2-specific-posts',
-  user2Auth,
+
   asyncErrCatcher(async (req, res) => {
     try {
-      const userState = req.user.state
-      const jurisdiction = req.user.jurisdiction
+      const userState = req.query.state
 
       const results = await Ioi_comp1.aggregate([
         // Unwind only the state_tc arrays
