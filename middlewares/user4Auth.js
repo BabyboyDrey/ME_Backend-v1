@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 
 module.exports = user4Auth = asyncErrCatcher(async (req, res, next) => {
   try {
-    const userToken = req.cookies.user4Token
+    const userToken = req.cookies.access_token
 
     if (!userToken) {
       return res.status(403).json('Forbidden Access')

@@ -97,13 +97,13 @@ router.post(
         sch_ideas_project_team_established,
         no_of_mous_signed_with_industry_partners,
         no_of_times_ciu_met_over_past_year,
-        email_of_data_entry_personnel,
 
         state
       } = req.body
 
       const tc_name = req.user.tc_name
       const jurisdiction = req.user.jurisdiction
+      const email_of_data_entry_personnel = req.user.email
 
       const new_tc_data = {}
 
@@ -278,6 +278,7 @@ router.post(
       const new_tc_data = req.body
       new_tc_data.tc_name = req.user.tc_name
       new_tc_data.jurisdiction = req.user.jurisdiction
+      new_tc_data.email_of_data_entry_personnel = req.user.email
       if (new_tc_data.no_of_industry_partners) {
         new_tc_data.no_of_industry_partners = Number(
           new_tc_data.no_of_industry_partners
@@ -427,11 +428,12 @@ router.post(
         gbv_policy_published_by_school,
         gbv_reporting_and_referral_system_for_youths_in_place_at_the_school,
         presence_of_grievance_redress_mechanism_at_the_school,
-        email_of_data_entry_personnel,
+
         state
       } = req.body
 
       const jurisdiction = req.user.jurisdiction
+      const email_of_data_entry_personnel = req.user.email
       const tc_name = req.user.tc_name
 
       const new_tc_data = {}
