@@ -15,6 +15,7 @@ module.exports = user2Auth = asyncErrCatcher(async (req, res, next) => {
       all: verified_user,
       role: verified_user.user_role,
       email: verified_user.email,
+      state: verified_user.state,
       jurisdiction: verified_user.jurisdiction
     }
     next()

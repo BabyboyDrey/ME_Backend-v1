@@ -12,13 +12,13 @@ const tcSchema = new mongoose.Schema({
       institution_type: {
         type: String
       },
+      institution_state: {
+        type: String
+      },
       institution_cat: {
         type: String
       },
       institution_ownership: {
-        type: String
-      },
-      institution_location: {
         type: String
       },
       institution_year_est: {
@@ -133,13 +133,13 @@ const tcSchema = new mongoose.Schema({
       institution_type: {
         type: String
       },
+      institution_state: {
+        type: String
+      },
       institution_cat: {
         type: String
       },
       institution_ownership: {
-        type: String
-      },
-      institution_location: {
         type: String
       },
       institution_year_est: {

@@ -84,6 +84,9 @@ const ioiSchema = new mongoose.Schema({
             type: String,
             default: 'pending'
           },
+          state: {
+            type: String
+          },
           email_of_data_entry_personnel: {
             type: String
           }
@@ -167,6 +170,9 @@ const ioiSchema = new mongoose.Schema({
         status: {
           type: String,
           default: 'pending'
+        },
+        state: {
+          type: String
         },
         email_of_data_entry_personnel: {
           type: String
@@ -260,6 +266,9 @@ const ioiSchema = new mongoose.Schema({
           status: {
             type: String,
             default: 'pending'
+          },
+          state: {
+            type: String
           },
           email_of_data_entry_personnel: {
             type: String
@@ -375,6 +384,9 @@ const ioiSchema = new mongoose.Schema({
         tc_name: {
           type: String,
           unique: true
+        },
+        state: {
+          type: String
         },
         status: {
           type: String,

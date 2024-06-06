@@ -15,6 +15,7 @@ const createCookie = (user, statusCode, res) => {
     const payload = {
       email: user.email,
       jurisdiction: user.jurisdiction,
+      state: user.state,
       role: user.role,
       tc_name: user.tc_name
     }
@@ -98,6 +99,157 @@ router.post(
 
 // POST REQUEST
 
+// router.post(
+//   '/make-post-female-enrollment-rate-in-project-supportedTc',
+//   upload.array('pdfs'),
+//   asyncErrCatcher(async (req, res) => {
+//     try {
+//       const items = req.body
+//       const jurisdiction = req.query.jurisdiction
+//       const tcType = `${jurisdiction}_tc`
+
+//       const existing_post = await Pdo_comp1.findOne({
+//         [`female_enrollment_rate_in_project_supportedTc.${tcType}.tc_name`]:
+//           items.tc_name
+//       })
+
+//       if (existing_post) {
+//         if (req.files[0]) {
+//           const filePath = `uploads/${req.files[0].filename}`
+//           checkAndDeleteFile(filePath, err => {
+//             if (err) {
+//               console.error(err)
+//             }
+//           })
+//         }
+//         if (req.files[1]) {
+//           const filePath = `uploads/${req.files[1].filename}`
+//           checkAndDeleteFile(filePath, err => {
+//             if (err) {
+//               console.error(err)
+//             }
+//           })
+//         }
+//         return res.status(400).json('Post data already exists')
+//       }
+//       if (
+//         items.no_of_female_students_enrolled_in_priority_trade &&
+//         items.total_no_of_students_enrolled_in_priority_trades
+//       ) {
+//         items.percentage =
+//           (items.no_of_female_students_enrolled_in_priority_trade /
+//             items.total_no_of_students_enrolled_in_priority_trades) *
+//           100
+//       }
+
+//       if (items.no_of_tvet_sensitizations_conducted_by_school && req.files[0]) {
+//         const new_value = items.no_of_tvet_sensitizations_conducted_by_school
+//         items.no_of_tvet_sensitizations_conducted_by_school = {
+//           value: new_value
+//         }
+//         items.no_of_tvet_sensitizations_conducted_by_school.tc_report_pdf =
+//           req.files[0].filename
+//         console.log(
+//           `fg: ${JSON.stringify(
+//             items.no_of_tvet_sensitizations_conducted_by_school
+//           )}, ${req.files[0]}`
+//         )
+//       }
+//       if (req.files[1]) {
+//         items.student_enrollment_data_doc_pdf = req.files[1].filename
+//       }
+
+//       const created_post = await Pdo_comp1.findOneAndUpdate(
+//         {},
+//         {
+//           $push: {
+//             [`female_enrollment_rate_in_project_supportedTc.${tcType}`]: items
+//           }
+//         },
+//         { new: true, upsert: true }
+//       )
+
+//       const tcTypeArray =
+//         created_post.female_enrollment_rate_in_project_supportedTc[tcType]
+
+//       const matchedEntry = tcTypeArray.find(e => e.tc_name === items.tc_name)
+
+//       const totalTc = await Pdo_comp1.find({
+//         [`female_enrollment_rate_in_project_supportedTc.${tcType}`]: {
+//           $exists: true
+//         }
+//       })
+
+//       let total_females_in_tcType_tc = 0
+//       let total_students_in_tcType_tc = 0
+
+//       totalTc.forEach(doc => {
+//         doc.female_enrollment_rate_in_project_supportedTc.federal_tc.forEach(
+//           entry => {
+//             total_females_in_tcType_tc +=
+//               entry.no_of_female_students_enrolled_in_priority_trade || 0
+
+//             total_students_in_tcType_tc +=
+//               entry.total_no_of_students_enrolled_in_priority_trades || 0
+//           }
+//         )
+
+//         doc.female_enrollment_rate_in_project_supportedTc.state_tc.forEach(
+//           entry => {
+//             total_females_in_tcType_tc +=
+//               entry.no_of_female_students_enrolled_in_priority_trade || 0
+//             total_students_in_tcType_tc +=
+//               entry.total_no_of_students_enrolled_in_priority_trades || 0
+//           }
+//         )
+//       })
+
+//       let percentage_of_female_students_across_tc
+
+//       if (total_students_in_tcType_tc !== 0) {
+//         percentage_of_female_students_across_tc =
+//           (total_females_in_tcType_tc / total_students_in_tcType_tc) * 100
+
+//         await Pdo_comp1.updateOne(
+//           {},
+//           {
+//             $set: {
+//               'female_enrollment_rate_in_project_supportedTc.percentage_of_female_students_across_tc':
+//                 percentage_of_female_students_across_tc
+//             }
+//           }
+//         )
+//       }
+
+//       res.status(200).json({
+//         success: true,
+//         message: 'Post created successfully',
+//         matchedEntry
+//       })
+//     } catch (err) {
+//       if (req.files[0]) {
+//         const filePath = `uploads/${req.files[0].filename}`
+//         checkAndDeleteFile(filePath, err => {
+//           if (err) {
+//             console.error(err)
+//           }
+//         })
+//       }
+//       if (req.files[1]) {
+//         const filePath = `uploads/${req.files[1].filename}`
+//         checkAndDeleteFile(filePath, err => {
+//           if (err) {
+//             console.error(err)
+//           }
+//         })
+//       }
+
+//       console.error(err)
+//       res.status(500).json({ success: false, message: 'Internal Server Error' })
+//     }
+//   })
+// )
+//this api has a bug, first pdf and pdf containinbg obj isnt posted to db
 router.post(
   '/make-post-female-enrollment-rate-in-project-supportedTc',
   upload.array('pdfs'),
@@ -131,6 +283,7 @@ router.post(
         }
         return res.status(400).json('Post data already exists')
       }
+
       if (
         items.no_of_female_students_enrolled_in_priority_trade &&
         items.total_no_of_students_enrolled_in_priority_trades
@@ -144,15 +297,18 @@ router.post(
       if (items.no_of_tvet_sensitizations_conducted_by_school && req.files[0]) {
         const new_value = items.no_of_tvet_sensitizations_conducted_by_school
         items.no_of_tvet_sensitizations_conducted_by_school = {
-          value: new_value
+          value: new_value,
+          tc_report_pdf: req.files[0].filename
         }
-        items.no_of_tvet_sensitizations_conducted_by_school.tc_report_pdf =
-          req.files[0].filename
       }
+      console.log(
+        'jk:',
+        JSON.stringify(items.no_of_tvet_sensitizations_conducted_by_school)
+      )
       if (req.files[1]) {
         items.student_enrollment_data_doc_pdf = req.files[1].filename
       }
-
+      console.log('Formatted items:', JSON.stringify(items))
       const created_post = await Pdo_comp1.findOneAndUpdate(
         {},
         {
@@ -182,7 +338,6 @@ router.post(
           entry => {
             total_females_in_tcType_tc +=
               entry.no_of_female_students_enrolled_in_priority_trade || 0
-
             total_students_in_tcType_tc +=
               entry.total_no_of_students_enrolled_in_priority_trades || 0
           }
@@ -886,6 +1041,103 @@ router.put(
         .json({ success: true, message: 'Post updated', updated_post: subDoc })
     } catch (err) {
       res.status(500).json(`Err message: ${err}`)
+    }
+  })
+)
+
+// GET REQUESTS FOR GETTING SPECIFC PDOS WITH USER2 STATE
+
+router.get(
+  '/get-status-for-female-enrollment-rate-in-project-supportedTc-for-specific-state',
+  user2Auth,
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const found_posts_exists = await Pdo_comp1.find({
+        [`female_enrollment_rate_in_project_supportedTc.${req.user.jurisdiction}_tc`]:
+          { $exists: true }
+      })
+      const jury_posts =
+        found_posts_exists[0].female_enrollment_rate_in_project_supportedTc[
+          `${req.user.jurisdiction}_tc`
+        ]
+      if (!found_posts_exists || jury_posts.length === 0)
+        return res
+          .status(400)
+          .json(
+            `${
+              req.user.jurisdiction.charAt(0).toUpperCase() +
+              req.user.jurisdiction.slice(1)
+            } Tc Array empty`
+          )
+      const found_posts = jury_posts
+        .filter(item => item.state === req.user.state)
+        .flat()
+
+      if (!found_posts || found_posts.length === 0)
+        return res
+          .status(400)
+          .json(
+            `${
+              req.user.jurisdiction.charAt(0).toUpperCase() +
+              req.user.jurisdiction.slice(1)
+            } Tc with specified state not existent`
+          )
+
+      res.status(200).json({
+        success: true,
+        found_posts,
+        jurisdiction: req.user.jurisdiction
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ Error: true, Message: err })
+    }
+  })
+)
+router.get(
+  '/get-update-status-for-beneficiaries-of-job-focused-interventions-for-specific-state',
+  user2Auth,
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const found_posts_exists = await Pdo_comp1.find({
+        [`beneficiaries_of_job_focused_interventions.${req.user.jurisdiction}_tc`]:
+          { $exists: true }
+      })
+      const jury_posts =
+        found_posts_exists[0].beneficiaries_of_job_focused_interventions[
+          `${req.user.jurisdiction}_tc`
+        ]
+      if (!found_posts_exists || jury_posts.length === 0)
+        return res
+          .status(400)
+          .json(
+            `${
+              req.user.jurisdiction.charAt(0).toUpperCase() +
+              req.user.jurisdiction.slice(1)
+            } Tc Array empty`
+          )
+      const found_posts = jury_posts
+        .filter(item => item.state === req.user.state)
+        .flat()
+
+      if (!found_posts || found_posts.length === 0)
+        return res
+          .status(400)
+          .json(
+            `${
+              req.user.jurisdiction.charAt(0).toUpperCase() +
+              req.user.jurisdiction.slice(1)
+            } Tc with specified state not existent`
+          )
+
+      res.status(200).json({
+        success: true,
+        found_posts,
+        jurisdiction: req.user.jurisdiction
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ Error: true, Message: err })
     }
   })
 )

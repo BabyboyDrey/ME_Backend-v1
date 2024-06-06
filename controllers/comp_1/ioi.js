@@ -90,15 +90,20 @@ router.post(
 router.post(
   '/make-post-for-no-of-supported-tc',
   upload.array('pdfs'),
+  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const {
         sch_ideas_project_team_established,
         no_of_mous_signed_with_industry_partners,
         no_of_times_ciu_met_over_past_year,
-        tc_name,
-        jurisdiction
+        email_of_data_entry_personnel,
+
+        state
       } = req.body
+
+      const tc_name = req.user.tc_name
+      const jurisdiction = req.user.jurisdiction
 
       const new_tc_data = {}
 
@@ -121,16 +126,21 @@ router.post(
       }
 
       new_tc_data.tc_name = tc_name
-
-      if (req.files[0] && sch_ideas_project_team_established) {
+      new_tc_data.state = state
+      new_tc_data.email_of_data_entry_personnel = email_of_data_entry_personnel
+      if (req.files && req.files[0] && sch_ideas_project_team_established) {
         new_tc_data.sch_ideas_project_team_established.report_pdf =
           req.files[0].filename
       }
-      if (req.files[1] && no_of_mous_signed_with_industry_partners) {
+      if (
+        req.files &&
+        req.files[1] &&
+        no_of_mous_signed_with_industry_partners
+      ) {
         new_tc_data.no_of_mous_signed_with_industry_partners.all_signed_mous_pdf =
           req.files[1].filename
       }
-      if (req.files[2] && no_of_times_ciu_met_over_past_year) {
+      if (req.files && req.files[2] && no_of_times_ciu_met_over_past_year) {
         new_tc_data.no_of_times_ciu_met_over_past_year.minutes_pdf =
           req.files[2].filename
       }
@@ -163,7 +173,7 @@ router.post(
       }
 
       if (existingDoc) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -172,7 +182,7 @@ router.post(
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -181,7 +191,7 @@ router.post(
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -224,33 +234,36 @@ router.post(
           newDoc.no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership
       })
     } catch (err) {
-      if (req.files[0]) {
-        fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          } else {
-            console.log(`Deleted File: ${req.files[0].filename}`)
-          }
-        })
+      if (req.files) {
+        if (req.files[0]) {
+          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            } else {
+              console.log(`Deleted File: ${req.files[0].filename}`)
+            }
+          })
+        }
+        if (req.files[1]) {
+          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            } else {
+              console.log(`Deleted File: ${req.files[1].filename}`)
+            }
+          })
+        }
+        if (req.files[2]) {
+          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            } else {
+              console.log(`Deleted File: ${req.files[2].filename}`)
+            }
+          })
+        }
       }
-      if (req.files[1]) {
-        fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          } else {
-            console.log(`Deleted File: ${req.files[1].filename}`)
-          }
-        })
-      }
-      if (req.files[2]) {
-        fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          } else {
-            console.log(`Deleted File: ${req.files[2].filename}`)
-          }
-        })
-      }
+      console.error(err)
       res.status(500).json(`Err: ${err}`)
     }
   })
@@ -259,10 +272,12 @@ router.post(
 router.post(
   '/make-post-no-of-training-programs-delivered-monitored',
   upload.array('pdfs'),
+  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const new_tc_data = req.body
-
+      new_tc_data.tc_name = req.user.tc_name
+      new_tc_data.jurisdiction = req.user.jurisdiction
       if (new_tc_data.no_of_industry_partners) {
         new_tc_data.no_of_industry_partners = Number(
           new_tc_data.no_of_industry_partners
@@ -298,10 +313,10 @@ router.post(
           new_tc_data.no_of_internship_arrangements
       }
 
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         new_tc_data.latest_tc_status_report_pdf = req.files[0].filename
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         new_tc_data.attendance_sheet_pdf = req.files[1].filename
       }
 
@@ -325,7 +340,7 @@ router.post(
       }
 
       if (existingDoc) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -334,7 +349,7 @@ router.post(
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -376,7 +391,8 @@ router.post(
         newDoc: newDoc.no_of_training_programs_delivered_monitored
       })
     } catch (err) {
-      if (req.files[0]) {
+      console.error(err)
+      if (req.files && req.files[0]) {
         fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
@@ -385,7 +401,7 @@ router.post(
           }
         })
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
@@ -402,6 +418,7 @@ router.post(
 router.post(
   '/make-post-no-of-supported-tc-with-reporting-and-referral-mechanisms-for-gbv-affected-youth',
   upload.array('pdfs'),
+  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const {
@@ -410,12 +427,17 @@ router.post(
         gbv_policy_published_by_school,
         gbv_reporting_and_referral_system_for_youths_in_place_at_the_school,
         presence_of_grievance_redress_mechanism_at_the_school,
-        jurisdiction,
-        tc_name
+        email_of_data_entry_personnel,
+        state
       } = req.body
+
+      const jurisdiction = req.user.jurisdiction
+      const tc_name = req.user.tc_name
 
       const new_tc_data = {}
       new_tc_data.tc_name = tc_name
+      new_tc_data.email_of_data_entry_personnel = email_of_data_entry_personnel
+      new_tc_data.state = state
 
       if (gbv_reporting_and_referral_system_for_youths_in_place_at_the_school) {
         new_tc_data.gbv_reporting_and_referral_system_for_youths_in_place_at_the_school =
@@ -451,17 +473,22 @@ router.post(
       }
 
       if (
+        req.files &&
         req.files[0] &&
         new_tc_data.gbv_sensitization_conducted_by_the_school
       ) {
         new_tc_data.gbv_sensitization_conducted_by_the_school.sensitization_pdf =
           req.files[0].filename
       }
-      if (req.files[1] && new_tc_data.gbv_policy_published_by_school) {
+      if (
+        req.files &&
+        req.files[1] &&
+        new_tc_data.gbv_policy_published_by_school
+      ) {
         new_tc_data.gbv_policy_published_by_school.school_gbv_policy_pdf =
           req.files[1].filename
       }
-      if (req.files[2]) {
+      if (req.files && req.files[2]) {
         new_tc_data.reports_showing_addressed_complaints_box_pdf =
           req.files[2].filename
       }
@@ -488,21 +515,21 @@ router.post(
       }
 
       if (existingDoc) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
             }
           })
         }
-        if (req.files[2]) {
+        if (req.files && req.files[2]) {
           fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
             if (unlinkErr) {
               console.error(unlinkErr)
@@ -543,28 +570,28 @@ router.post(
           newDoc.no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth
       })
     } catch (err) {
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-      if (req.files[2]) {
+      if (req.files && req.files[2]) {
         fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
           if (unlinkErr) {
             console.error(unlinkErr)
           }
         })
       }
-
+      console.error(err)
       res.status(500).json(err)
     }
   })
@@ -2755,6 +2782,89 @@ router.put(
         .json({ success: true, message: 'Post updated', updated_post: subDoc })
     } catch (err) {
       res.status(500).json(`Err message: ${err}`)
+    }
+  })
+)
+
+// GET REQUESTS FOR USER2 STATE SPECIFC POSTS
+
+router.get(
+  '/get-all-user2-specific-posts',
+  user2Auth,
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const userState = req.user.state
+      const jurisdiction = req.user.jurisdiction
+
+      const results = await Ioi_comp1.aggregate([
+        // Unwind only the state_tc arrays
+        {
+          $unwind: `$no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc`
+        },
+        { $unwind: `$no_of_training_programs_delivered_monitored.state_tc` },
+        {
+          $unwind: `$no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc`
+        },
+        {
+          $unwind: `$no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc`
+        },
+
+        // Match documents where the state matches the user's state
+        {
+          $match: {
+            $or: [
+              {
+                'no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc.state':
+                  userState
+              },
+              {
+                'no_of_training_programs_delivered_monitored.state_tc.state':
+                  userState
+              },
+              {
+                'no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc.state':
+                  userState
+              },
+              {
+                'no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc.state':
+                  userState
+              }
+            ]
+          }
+        },
+
+        // Group back the results to reassemble the documents
+        {
+          $group: {
+            _id: '$_id',
+            no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership:
+              {
+                $push:
+                  '$no_of_supported_TC_with_functioning_modernized_governing_board_with_industry_partnership.state_tc'
+              },
+            no_of_training_programs_delivered_monitored: {
+              $push: '$no_of_training_programs_delivered_monitored.state_tc'
+            },
+            no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth:
+              {
+                $push:
+                  '$no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc'
+              },
+            no_of_fully_functioning_upgraded_workshops_in_supported_tc: {
+              $push:
+                '$no_of_fully_functioning_upgraded_workshops_in_supported_tc.state_tc'
+            }
+          }
+        }
+      ])
+
+      res.status(200).json({
+        success: true,
+        data: results
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ ErrMessage: err.message })
     }
   })
 )

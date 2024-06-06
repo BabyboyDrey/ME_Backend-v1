@@ -37,6 +37,7 @@ const pdoSchema = new mongoose.Schema({
         tc_name: {
           type: String
         },
+
         percentage: {
           type: Number
         },
@@ -82,6 +83,9 @@ const pdoSchema = new mongoose.Schema({
           type: String
         },
         tc_name: {
+          type: String
+        },
+        state: {
           type: String
         },
         percentage: {
@@ -134,6 +138,7 @@ const pdoSchema = new mongoose.Schema({
         tc_name: {
           type: String
         },
+
         status: {
           type: String,
           default: 'pending'
@@ -174,6 +179,9 @@ const pdoSchema = new mongoose.Schema({
           }
         },
         tc_name: {
+          type: String
+        },
+        state: {
           type: String
         },
         status: {
