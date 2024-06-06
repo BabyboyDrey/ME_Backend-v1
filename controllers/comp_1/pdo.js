@@ -16,69 +16,76 @@ const createCookie = (user, statusCode, res) => {
       email: user.email,
       jurisdiction: user.jurisdiction,
       state: user.state,
-      role: user.role,
+      role: user.user_role,
       tc_name: user.tc_name
     }
 
-    let user4Token
-    let user1Token
-    let user2Token
-    let user3Token
+    let access_token
+
     if (payload.role === 'user4') {
-      user4Token = jwt.sign(payload, process.env.JWT_SECRET_PASS, {
+      access_token = jwt.sign(payload, process.env.JWT_SECRET_PASS, {
         expiresIn: '7hr'
       })
     } else if (payload.role === 'user2') {
-      user2Token = jwt.sign(payload, process.env.JWT_SECRET_PASS, {
+      access_token = jwt.sign(payload, process.env.JWT_SECRET_PASS, {
         expiresIn: '7hr'
       })
     } else if (payload.role === 'user3') {
-      user3Token = jwt.sign(payload, process.env.JWT_SECRET_PASS, {
+      access_token = jwt.sign(payload, process.env.JWT_SECRET_PASS, {
         expiresIn: '7hr'
       })
     } else {
-      user1Token = jwt.sign(payload, process.env.JWT_SECRET_PASS, {
+      access_token = jwt.sign(payload, process.env.JWT_SECRET_PASS, {
         expiresIn: '7hr'
       })
     }
 
-    if (user4Token) {
-      res
-        .status(statusCode)
-        .cookie('user4Token', user4Token, {
-          sameSite: 'None',
-          httpOnly: true,
-          secure: true
-        })
-        .json({ success: true, token: user4Token })
-    } else if (user1Token) {
-      res
-        .status(statusCode)
-        .cookie('user1Token', user1Token, {
-          sameSite: 'None',
-          httpOnly: true,
-          secure: true
-        })
-        .json({ success: true, token: user1Token })
-    } else if (user2Token) {
-      res
-        .status(statusCode)
-        .cookie('user2Token', user2Token, {
-          sameSite: 'None',
-          httpOnly: true,
-          secure: true
-        })
-        .json({ success: true, token: user2Token })
-    } else if (user3Token) {
-      res
-        .status(statusCode)
-        .cookie('user3Token', user3Token, {
-          sameSite: 'None',
-          httpOnly: true,
-          secure: true
-        })
-        .json({ success: true, token: user3Token })
-    }
+    // if (user4Token) {
+    //   res
+    //     .status(statusCode)
+    //     .cookie('user4Token', user4Token, {
+    //       sameSite: 'None',
+    //       httpOnly: true,
+    //       secure: true
+    //     })
+    //     .json({ success: true, token: user4Token })
+    // } else if (user1Token) {
+    //   res
+    //     .status(statusCode)
+    //     .cookie('user1Token', user1Token, {
+    //       sameSite: 'None',
+    //       httpOnly: true,
+    //       secure: true
+    //     })
+    //     .json({ success: true, token: user1Token })
+    // } else if (user2Token) {
+    //   res
+    //     .status(statusCode)
+    //     .cookie('user2Token', user2Token, {
+    //       sameSite: 'None',
+    //       httpOnly: true,
+    //       secure: true
+    //     })
+    //     .json({ success: true, token: user2Token })
+    // } else if (user3Token) {
+    //   res
+    //     .status(statusCode)
+    //     .cookie('user3Token', user3Token, {
+    //       sameSite: 'None',
+    //       httpOnly: true,
+    //       secure: true
+    //     })
+    //     .json({ success: true, token: user3Token })
+    // }
+
+    res
+      .status(statusCode)
+      .cookie('access_token', access_token, {
+        sameSite: 'None',
+        httpOnly: true,
+        secure: true
+      })
+      .json({ success: true, token: access_token })
   } catch (err) {
     res.status(500).json(`Err creating cookie: ${err}`)
   }

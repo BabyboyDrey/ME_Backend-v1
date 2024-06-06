@@ -602,6 +602,7 @@ router.post(
 router.post(
   '/make-post-no-of-fully-functioning-upgraded-workshops-in-supported-tc',
   upload.array('pdfs'),
+  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const new_tc_data = req.body
