@@ -269,13 +269,10 @@ router.post(
 router.post(
   '/make-post-no-of-training-programs-delivered-monitored',
   upload.array('pdfs'),
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const new_tc_data = req.body
-      new_tc_data.tc_name = req.user.tc_name
-      new_tc_data.jurisdiction = req.user.jurisdiction
-      new_tc_data.email_of_data_entry_personnel = req.user.email
+
       if (new_tc_data.no_of_industry_partners) {
         new_tc_data.no_of_industry_partners = Number(
           new_tc_data.no_of_industry_partners
@@ -416,7 +413,6 @@ router.post(
 router.post(
   '/make-post-no-of-supported-tc-with-reporting-and-referral-mechanisms-for-gbv-affected-youth',
   upload.array('pdfs'),
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const {
@@ -425,13 +421,11 @@ router.post(
         gbv_policy_published_by_school,
         gbv_reporting_and_referral_system_for_youths_in_place_at_the_school,
         presence_of_grievance_redress_mechanism_at_the_school,
-
+        jurisdiction,
+        email_of_data_entry_personnel,
+        tc_name,
         state
       } = req.body
-
-      const jurisdiction = req.user.jurisdiction
-      const email_of_data_entry_personnel = req.user.email
-      const tc_name = req.user.tc_name
 
       const new_tc_data = {}
       new_tc_data.tc_name = tc_name
@@ -599,13 +593,9 @@ router.post(
 router.post(
   '/make-post-no-of-fully-functioning-upgraded-workshops-in-supported-tc',
   upload.array('pdfs'),
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const new_tc_data = req.body
-      new_tc_data.jurisdiction = req.user.jurisdiction
-      new_tc_data.email_of_data_entry_personnel = req.user.email
-      new_tc_data.tc_name = req.user.tc_name
       if (new_tc_data.no_of_workshops_renovated) {
         new_tc_data.no_of_workshops_renovated = Number(
           new_tc_data.no_of_workshops_renovated
