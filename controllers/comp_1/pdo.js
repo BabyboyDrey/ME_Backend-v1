@@ -3,12 +3,9 @@ const router = express.Router()
 const Pdo_comp1 = require('../../models/comp_1/PDO')
 const { upload } = require('../../multer/multer_pdf')
 const asyncErrCatcher = require('../../middlewares/asyncErrCatcher')
-const user1Auth = require('../../middlewares/user1Auth')
-const user4Auth = require('../../middlewares/user4Auth')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const checkAndDeleteFile = require('../../utils/checkAndDeleteFile')
-const user2Auth = require('../../middlewares/user2Auth')
 
 const createCookie = (user, statusCode, res) => {
   try {
@@ -979,12 +976,11 @@ router.get(
 
 router.put(
   '/update-status-for-female-enrollment-rate-in-project-supportedTc/:id',
-  user2Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
       const post_exists = await Pdo_comp1.findOne({
-        [`female_enrollment_rate_in_project_supportedTc.${req.user.jurisdiction}_tc`]:
+        [`female_enrollment_rate_in_project_supportedTc.${items.jurisdiction}_tc`]:
           {
             $elemMatch: {
               _id: req.params.id
@@ -997,7 +993,7 @@ router.put(
       }
       const subDocs =
         post_exists.female_enrollment_rate_in_project_supportedTc[
-          `${req.user.jurisdiction}_tc`
+          `${items.jurisdiction}_tc`
         ]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
       subDoc.status = items.status
@@ -1014,12 +1010,11 @@ router.put(
 )
 router.put(
   '/update-status-for-beneficiaries-of-job-focused-interventions/:id',
-  user2Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
       const post_exists = await Pdo_comp1.findOne({
-        [`beneficiaries_of_job_focused_interventions.${req.user.jurisdiction}_tc`]:
+        [`beneficiaries_of_job_focused_interventions.${items.jurisdiction}_tc`]:
           {
             $elemMatch: {
               _id: req.params.id
@@ -1032,7 +1027,7 @@ router.put(
       }
       const subDocs =
         post_exists.beneficiaries_of_job_focused_interventions[
-          `${req.user.jurisdiction}_tc`
+          `${items.jurisdiction}_tc`
         ]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
       subDoc.status = items.status
@@ -1052,28 +1047,27 @@ router.put(
 
 router.get(
   '/get-status-for-female-enrollment-rate-in-project-supportedTc-for-specific-state',
-  user2Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const found_posts_exists = await Pdo_comp1.find({
-        [`female_enrollment_rate_in_project_supportedTc.${req.user.jurisdiction}_tc`]:
+        [`female_enrollment_rate_in_project_supportedTc.${req.query.jurisdiction}_tc`]:
           { $exists: true }
       })
       const jury_posts =
         found_posts_exists[0].female_enrollment_rate_in_project_supportedTc[
-          `${req.user.jurisdiction}_tc`
+          `${req.query.jurisdiction}_tc`
         ]
       if (!found_posts_exists || jury_posts.length === 0)
         return res
           .status(400)
           .json(
             `${
-              req.user.jurisdiction.charAt(0).toUpperCase() +
-              req.user.jurisdiction.slice(1)
+              req.query.jurisdiction.charAt(0).toUpperCase() +
+              req.query.jurisdiction.slice(1)
             } Tc Array empty`
           )
       const found_posts = jury_posts
-        .filter(item => item.state === req.user.state)
+        .filter(item => item.state === req.query.state)
         .flat()
 
       if (!found_posts || found_posts.length === 0)
@@ -1081,15 +1075,15 @@ router.get(
           .status(400)
           .json(
             `${
-              req.user.jurisdiction.charAt(0).toUpperCase() +
-              req.user.jurisdiction.slice(1)
+              req.query.jurisdiction.charAt(0).toUpperCase() +
+              req.query.jurisdiction.slice(1)
             } Tc with specified state not existent`
           )
 
       res.status(200).json({
         success: true,
         found_posts,
-        jurisdiction: req.user.jurisdiction
+        jurisdiction: req.query.jurisdiction
       })
     } catch (err) {
       console.error(err)
@@ -1099,28 +1093,27 @@ router.get(
 )
 router.get(
   '/get-update-status-for-beneficiaries-of-job-focused-interventions-for-specific-state',
-  user2Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const found_posts_exists = await Pdo_comp1.find({
-        [`beneficiaries_of_job_focused_interventions.${req.user.jurisdiction}_tc`]:
+        [`beneficiaries_of_job_focused_interventions.${req.query.jurisdiction}_tc`]:
           { $exists: true }
       })
       const jury_posts =
         found_posts_exists[0].beneficiaries_of_job_focused_interventions[
-          `${req.user.jurisdiction}_tc`
+          `${req.query.jurisdiction}_tc`
         ]
       if (!found_posts_exists || jury_posts.length === 0)
         return res
           .status(400)
           .json(
             `${
-              req.user.jurisdiction.charAt(0).toUpperCase() +
-              req.user.jurisdiction.slice(1)
+              req.query.jurisdiction.charAt(0).toUpperCase() +
+              req.query.jurisdiction.slice(1)
             } Tc Array empty`
           )
       const found_posts = jury_posts
-        .filter(item => item.state === req.user.state)
+        .filter(item => item.state === req.query.state)
         .flat()
 
       if (!found_posts || found_posts.length === 0)
@@ -1128,15 +1121,15 @@ router.get(
           .status(400)
           .json(
             `${
-              req.user.jurisdiction.charAt(0).toUpperCase() +
-              req.user.jurisdiction.slice(1)
+              req.query.jurisdiction.charAt(0).toUpperCase() +
+              req.query.jurisdiction.slice(1)
             } Tc with specified state not existent`
           )
 
       res.status(200).json({
         success: true,
         found_posts,
-        jurisdiction: req.user.jurisdiction
+        jurisdiction: req.query.jurisdiction
       })
     } catch (err) {
       console.error(err)

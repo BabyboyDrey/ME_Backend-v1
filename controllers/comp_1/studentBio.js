@@ -14,13 +14,12 @@ const router = express.Router()
 router.post(
   '/make-post-student-bio',
   upload.single('jpeg'),
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
 
       const student_exists = await Student.findOne({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${items.jurisdiction}_tc`]: {
           $elemMatch: { reg_num: items.reg_num }
         }
       })
@@ -53,7 +52,7 @@ router.post(
       res.status(200).json({
         success: true,
         Message: 'Student successfully created',
-        new_item: new_item[`${req.user.jurisdiction}_tc`]
+        new_item: new_item[`${items.jurisdiction}_tc`]
       })
     } catch (err) {
       if (req.file) {
@@ -73,11 +72,10 @@ router.post(
 
 router.get(
   '/get-post-student-bio/:bio_id',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const found_student = await Student.findOne({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${req.query.jurisdiction}_tc`]: {
           $elemMatch: {
             _id: new mongoose.Types.ObjectId(req.params.bio_id)
           }
@@ -90,7 +88,7 @@ router.get(
           .json({ success: false, message: 'Student not found' })
       }
 
-      const subDocs = found_student[`${req.user.jurisdiction}_tc`]
+      const subDocs = found_student[`${req.query.jurisdiction}_tc`]
 
       const subDoc = subDocs.find(e => e._id.toString() === req.params.bio_id)
 
@@ -107,18 +105,17 @@ router.get(
 
 router.get(
   '/get-all-students',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const all_students = await Student.find({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${req.query.jurisdiction}_tc`]: {
           $exists: true
         }
       })
 
       res.status(200).json({
         success: true,
-        all_students: all_students[0][`${req.user.jurisdiction}_tc`]
+        all_students: all_students[0][`${req.query.jurisdiction}_tc`]
       })
     } catch (err) {
       console.error(err)
@@ -131,14 +128,13 @@ router.get(
 
 router.put(
   '/update-student-bio/:id',
-  user1Auth,
   upload.single('jpeg'),
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
 
       const found_student = await Student.findOne({
-        [`${req.user.jurisdiction}_tc._id`]: new mongoose.Types.ObjectId(
+        [`${items.jurisdiction}_tc._id`]: new mongoose.Types.ObjectId(
           req.params.id
         )
       })
@@ -155,7 +151,7 @@ router.put(
         return res.status(404).json({ Message: 'Post not found' })
       }
 
-      const subDocs = found_student[`${req.user.jurisdiction}_tc`]
+      const subDocs = found_student[`${items.jurisdiction}_tc`]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
 
       if (req.file) {
@@ -257,7 +253,6 @@ router.put(
 
 router.delete(
   '/delete-post-student-bio/:id',
-  user4Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const query = {}

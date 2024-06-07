@@ -10,13 +10,12 @@ const router = express.Router()
 
 router.post(
   '/make-post-tc',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
 
       const post_exists = await Tc.findOne({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${items.jurisdiction}_tc`]: {
           $elemMatch: { institution_email: items.institution_email }
         }
       })
@@ -29,7 +28,7 @@ router.post(
         {},
         {
           $push: {
-            [`${req.user.jurisdiction}_tc`]: items
+            [`${items.jurisdiction}_tc`]: items
           }
         },
         { new: true, upsert: true }
@@ -38,7 +37,7 @@ router.post(
       res.status(200).json({
         success: true,
         Message: 'Post successfully created',
-        new_item: new_item[`${req.user.jurisdiction}_tc`]
+        new_item: new_item[`${items.jurisdiction}_tc`]
       })
     } catch (err) {
       res.status(500).json({ ErrMessage: err })
@@ -50,13 +49,12 @@ router.post(
 
 router.put(
   '/update-post-tc/:id',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
 
       const found_post = await Tc.findOne({
-        [`${req.user.jurisdiction}_tc._id`]: new mongoose.Types.ObjectId(
+        [`${items.jurisdiction}_tc._id`]: new mongoose.Types.ObjectId(
           req.params.id
         )
       })
@@ -65,7 +63,7 @@ router.put(
         return res.status(404).json({ Message: 'Post not found' })
       }
 
-      const subDocs = found_post[`${req.user.jurisdiction}_tc`]
+      const subDocs = found_post[`${items.jurisdiction}_tc`]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
       Object.assign(subDoc, items)
 
@@ -83,11 +81,10 @@ router.put(
 
 router.get(
   '/get-post/:id',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const found_post = await Tc.findOne({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${req.query.jurisdiction}_tc`]: {
           $elemMatch: {
             _id: new mongoose.Types.ObjectId(req.params.id)
           }
@@ -100,7 +97,7 @@ router.get(
           .json({ success: false, message: 'Post not found' })
       }
 
-      const subDocs = found_post[`${req.user.jurisdiction}_tc`]
+      const subDocs = found_post[`${req.query.jurisdiction}_tc`]
 
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
 
@@ -116,18 +113,17 @@ router.get(
 
 router.get(
   '/get-all-posts',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const all_posts = await Tc.find({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${req.query.jurisdiction}_tc`]: {
           $exists: true
         }
       })
 
       res.status(200).json({
         success: true,
-        all_posts: all_posts[0][`${req.user.jurisdiction}_tc`]
+        all_posts: all_posts[0][`${req.query.jurisdiction}_tc`]
       })
     } catch (err) {
       console.error(err)
@@ -140,7 +136,6 @@ router.get(
 
 router.delete(
   '/delete-post-tc/:id',
-  user4Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const query = {}
@@ -178,7 +173,5 @@ router.delete(
     }
   })
 )
-
-//
 
 module.exports = router

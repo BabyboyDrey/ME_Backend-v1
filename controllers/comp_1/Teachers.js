@@ -9,13 +9,12 @@ const router = require('express').Router()
 
 router.post(
   '/create-teacher',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
       items.date_of_birth = new Date(items.date_of_birth)
       const found_teacher = await Teachers.findOne({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${items.jurisdiction}_tc`]: {
           $elemMatch: {
             email: items.email
           }
@@ -30,7 +29,7 @@ router.post(
         {},
         {
           $push: {
-            [`${req.user.jurisdiction}_tc`]: items
+            [`${items.jurisdiction}_tc`]: items
           }
         },
         { new: true, upsert: true }
@@ -38,7 +37,7 @@ router.post(
 
       res.status(200).json({
         success: true,
-        new_teacher: new_teacher[`${req.user.jurisdiction}_tc`],
+        new_teacher: new_teacher[`${items.jurisdiction}_tc`],
         message: 'Teacher created'
       })
     } catch (err) {
@@ -52,13 +51,12 @@ router.post(
 
 router.put(
   '/update-teacher/:id',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
 
       const found_teacher = await Teachers.findOne({
-        [`${req.user.jurisdiction}_tc._id`]: new mongoose.Types.ObjectId(
+        [`${items.jurisdiction}_tc._id`]: new mongoose.Types.ObjectId(
           req.params.id
         )
       })
@@ -67,7 +65,7 @@ router.put(
         return res.status(404).json({ Message: 'Teacher not found' })
       }
 
-      const subDocs = found_teacher[`${req.user.jurisdiction}_tc`]
+      const subDocs = found_teacher[`${items.jurisdiction}_tc`]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
 
       Object.assign(subDoc, items)
@@ -86,11 +84,10 @@ router.put(
 
 router.get(
   '/get-teacher-data/:id',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const found_teacher = await Teachers.findOne({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${req.query.jurisdiction}_tc`]: {
           $elemMatch: {
             _id: new mongoose.Types.ObjectId(req.params.id)
           }
@@ -103,7 +100,7 @@ router.get(
           .json({ success: false, message: 'Teacher not found' })
       }
 
-      const subDocs = found_teacher[`${req.user.jurisdiction}_tc`]
+      const subDocs = found_teacher[`${req.query.jurisdiction}_tc`]
 
       const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
 
@@ -119,18 +116,17 @@ router.get(
 
 router.get(
   '/get-all-students',
-  user1Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const all_teachers = await Teachers.find({
-        [`${req.user.jurisdiction}_tc`]: {
+        [`${req.query.jurisdiction}_tc`]: {
           $exists: true
         }
       })
 
       res.status(200).json({
         success: true,
-        all_posts: all_teachers[0][`${req.user.jurisdiction}_tc`]
+        all_posts: all_teachers[0][`${req.query.jurisdiction}_tc`]
       })
     } catch (err) {
       console.error(err)
@@ -143,7 +139,6 @@ router.get(
 
 router.delete(
   '/delete-teacher/:id',
-  user4Auth,
   asyncErrCatcher(async (req, res) => {
     try {
       const query = {}

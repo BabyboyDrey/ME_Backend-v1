@@ -9,9 +9,6 @@ const studentBioSchema = new mongoose.Schema({
       school_name: {
         type: String
       },
-      entry_level: {
-        type: String
-      },
       surname: {
         type: String
       },
@@ -63,19 +60,10 @@ const studentBioSchema = new mongoose.Schema({
       nin: {
         type: Number
       },
-      o_level_qual: {
-        type: String
-      },
-      number_sitting: {
-        type: Number
-      },
       gpa: {
         type: Number
       },
       grad_status: {
-        type: String
-      },
-      enrolled: {
         type: String
       },
       year_of_cert: {
@@ -99,9 +87,6 @@ const studentBioSchema = new mongoose.Schema({
       qualification_in_view: {
         type: String
       },
-      mode_of_study: {
-        type: String
-      },
       exit_year: {
         type: Number
       },
@@ -117,32 +102,8 @@ const studentBioSchema = new mongoose.Schema({
       duration_of_study: {
         type: String
       },
-      image_jpeg: {
-        type: String
-      },
-      awards: {
-        type: [String]
-      },
-      curr_grade: {
-        type: String
-      },
       cgpa: {
         type: Number
-      },
-      grade_stat: {
-        type: String
-      },
-      enrollment_stat: {
-        type: String
-      },
-      status: {
-        type: Number
-      },
-      timed: {
-        type: Date
-      },
-      pass: {
-        type: String
       },
       student_code: {
         type: Number
@@ -157,9 +118,6 @@ const studentBioSchema = new mongoose.Schema({
       school_name: {
         type: String
       },
-      entry_level: {
-        type: String
-      },
       surname: {
         type: String
       },
@@ -211,19 +169,10 @@ const studentBioSchema = new mongoose.Schema({
       nin: {
         type: Number
       },
-      o_level_qual: {
-        type: String
-      },
-      number_sitting: {
-        type: Number
-      },
       gpa: {
         type: Number
       },
       grad_status: {
-        type: String
-      },
-      enrolled: {
         type: String
       },
       year_of_cert: {
@@ -247,9 +196,6 @@ const studentBioSchema = new mongoose.Schema({
       qualification_in_view: {
         type: String
       },
-      mode_of_study: {
-        type: String
-      },
       exit_year: {
         type: Number
       },
@@ -265,32 +211,8 @@ const studentBioSchema = new mongoose.Schema({
       duration_of_study: {
         type: String
       },
-      image_jpeg: {
-        type: String
-      },
-      awards: {
-        type: [String]
-      },
-      curr_grade: {
-        type: String
-      },
       cgpa: {
         type: Number
-      },
-      grade_stat: {
-        type: String
-      },
-      enrollment_stat: {
-        type: String
-      },
-      status: {
-        type: Number
-      },
-      timed: {
-        type: Date
-      },
-      pass: {
-        type: String
       },
       student_code: {
         type: Number

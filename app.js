@@ -8,6 +8,7 @@ const pdo_comp1_routes = require('./controllers/comp_1/pdo')
 const student_bio_comp1_routes = require('./controllers/comp_1/studentBio')
 const tc_comp1_routes = require('./controllers/comp_1/TC')
 const teachers_comp1_routes = require('./controllers/comp_1/Teachers')
+const ccs_comp1_routes = require('./controllers/comp_1/crossCuttingIssues')
 const path = require('path')
 const app = express()
 
@@ -32,6 +33,7 @@ app.use('/api/v1/pdo/c1', pdo_comp1_routes)
 app.use('/api/v1/student/c1', student_bio_comp1_routes)
 app.use('/api/v1/tc/c1', tc_comp1_routes)
 app.use('/api/v1/teachers/c1', teachers_comp1_routes)
+app.use('/api/v1/ccs/c1', ccs_comp1_routes)
 connectDb()
 
 process.on('uncaughtException', err => {

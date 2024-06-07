@@ -33,77 +33,22 @@ const tcSchema = new mongoose.Schema({
       institution_email: {
         type: String
       },
-      admin_office_number: {
-        type: Number
-      },
-      admin_office_size: {
-        type: String
-      },
-      admin_office_capacity: {
-        type: String
-      },
-      clinics_number: {
-        type: Number
-      },
-      clinics_size: {
-        type: String
-      },
-      clinics_capacity: {
-        type: String
-      },
+
       male_hostel_number: {
         type: Number
-      },
-      male_hostel_size: {
-        type: String
-      },
-      male_hostel_capacity: {
-        type: String
       },
       female_hostel_number: {
         type: Number
       },
-      female_hostel_size: {
-        type: String
-      },
-      female_hostel_capacity: {
-        type: String
-      },
+
       canteens_num: {
         type: Number
-      },
-      canteens_size: {
-        type: String
       },
       sponsor: {
         type: String
       },
-      fields_num: {
-        type: Number
-      },
-      fields_size: {
-        type: String
-      },
-      fields_capacity: {
-        type: String
-      },
       bus_num: {
         type: Number
-      },
-      bus_size: {
-        type: String
-      },
-      road_length: {
-        type: String
-      },
-      tar_length: {
-        type: String
-      },
-      inst_area: {
-        type: String
-      },
-      length_area: {
-        type: String
       },
       gen_num: {
         type: Number
@@ -115,9 +60,6 @@ const tcSchema = new mongoose.Schema({
         type: String
       },
       agricultural_fields: {
-        type: String
-      },
-      purpose_of_field: {
         type: String
       }
     }
@@ -154,77 +96,22 @@ const tcSchema = new mongoose.Schema({
       institution_email: {
         type: String
       },
-      admin_office_number: {
-        type: Number
-      },
-      admin_office_size: {
-        type: String
-      },
-      admin_office_capacity: {
-        type: String
-      },
-      clinics_number: {
-        type: Number
-      },
-      clinics_size: {
-        type: String
-      },
-      clinics_capacity: {
-        type: String
-      },
+
       male_hostel_number: {
         type: Number
-      },
-      male_hostel_size: {
-        type: String
-      },
-      male_hostel_capacity: {
-        type: String
       },
       female_hostel_number: {
         type: Number
       },
-      female_hostel_size: {
-        type: String
-      },
-      female_hostel_capacity: {
-        type: String
-      },
+
       canteens_num: {
         type: Number
-      },
-      canteens_size: {
-        type: String
       },
       sponsor: {
         type: String
       },
-      fields_num: {
-        type: Number
-      },
-      fields_size: {
-        type: String
-      },
-      fields_capacity: {
-        type: String
-      },
       bus_num: {
         type: Number
-      },
-      bus_size: {
-        type: String
-      },
-      road_length: {
-        type: String
-      },
-      tar_length: {
-        type: String
-      },
-      inst_area: {
-        type: String
-      },
-      length_area: {
-        type: String
       },
       gen_num: {
         type: Number
@@ -236,9 +123,6 @@ const tcSchema = new mongoose.Schema({
         type: String
       },
       agricultural_fields: {
-        type: String
-      },
-      purpose_of_field: {
         type: String
       }
     }
