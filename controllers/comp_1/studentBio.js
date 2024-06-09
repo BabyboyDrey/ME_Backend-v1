@@ -13,7 +13,6 @@ const router = express.Router()
 
 router.post(
   '/make-post-student-bio',
-  upload.single('jpeg'),
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
@@ -25,18 +24,15 @@ router.post(
       })
 
       if (student_exists) {
-        if (req.file) {
-          const filePath = `uploads/${req.file.filename}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error(err)
-            }
-          })
-        }
+        // if (req.file) {
+        //   const filePath = `uploads/${req.file.filename}`
+        //   checkAndDeleteFile(filePath, err => {
+        //     if (err) {
+        //       console.error(err)
+        //     }
+        //   })
+        // }
         return res.status(400).json({ Message: 'Student exists' })
-      }
-      if (req.file) {
-        items.image_jpeg = req.file.filename
       }
 
       const new_item = await Student.findOneAndUpdate(
@@ -55,14 +51,6 @@ router.post(
         new_item: new_item[`${items.jurisdiction}_tc`]
       })
     } catch (err) {
-      if (req.file) {
-        const filePath = `uploads/${req.file.filename}`
-        checkAndDeleteFile(filePath, err => {
-          if (err) {
-            console.error(err)
-          }
-        })
-      }
       res.status(500).json({ ErrMessage: err })
     }
   })

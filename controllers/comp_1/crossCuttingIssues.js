@@ -51,6 +51,8 @@ router.post(
   })
 )
 
+// GET REQUESTS
+
 router.get(
   '/get-cross-cutting-issues',
   asyncErrCatcher(async (req, res) => {
