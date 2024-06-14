@@ -11,6 +11,22 @@ const router = express.Router()
 
 // POST REQUEST
 
+function filterByTcName (data, dataType) {
+  let groupedData
+  if (dataType === 'Student') {
+    groupedData = data.reduce((acc, obj) => {
+      const { school_name, ...rest } = obj
+      if (!acc[school_name]) {
+        acc[school_name] = [{ school_name, ...rest }]
+      } else {
+        acc[school_name].push({ school_name, ...rest })
+      }
+      return acc
+    }, {})
+  }
+  return groupedData
+}
+
 router.post(
   '/make-post-student-bio',
   asyncErrCatcher(async (req, res) => {
@@ -39,7 +55,7 @@ router.post(
         {},
         {
           $push: {
-            [`${req.user.jurisdiction}_tc`]: items
+            [`${items.jurisdiction}_tc`]: items
           }
         },
         { new: true, upsert: true }

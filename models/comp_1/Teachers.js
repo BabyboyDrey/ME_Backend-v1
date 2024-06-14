@@ -65,6 +65,9 @@ const teachersSchema = new mongoose.Schema({
       },
       did_you_participate_in_the_ideas_tti_training: {
         type: String
+      },
+      tc_name:{
+        type: String
       }
     }
   ],
@@ -131,6 +134,9 @@ const teachersSchema = new mongoose.Schema({
         type: String
       },
       did_you_participate_in_the_ideas_tti_training: {
+        type: String
+      },
+      tc_name:{
         type: String
       }
     }

@@ -115,7 +115,7 @@ router.get(
 )
 
 router.get(
-  '/get-all-students',
+  '/get-all-teachers',
   asyncErrCatcher(async (req, res) => {
     try {
       const all_teachers = await Teachers.find({
