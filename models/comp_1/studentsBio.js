@@ -107,6 +107,9 @@ const studentBioSchema = new mongoose.Schema({
       },
       student_code: {
         type: Number
+      },
+      occupational_trade: {
+        type: String
       }
     }
   ],
@@ -216,6 +219,9 @@ const studentBioSchema = new mongoose.Schema({
       },
       student_code: {
         type: Number
+      },
+      occupational_trade: {
+        type: String
       }
     }
   ]

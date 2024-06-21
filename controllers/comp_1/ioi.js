@@ -914,7 +914,7 @@ router.get(
       } else {
         tc_post =
           found_post.no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth.state_tc.find(
-            post._id.toString() === req.params.post_id
+            post => post._id.toString() === req.params.post_id
           )
       }
 
@@ -1119,8 +1119,7 @@ router.get(
           },
           {
             $project: {
-              federal_tc:
-                '$no_of_training_programs_delivered_monitored.state_tc',
+              state_tc: '$no_of_training_programs_delivered_monitored.state_tc',
               _id: 0
             }
           },
