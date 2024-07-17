@@ -263,6 +263,10 @@ const ioiSchema = new mongoose.Schema({
             type: String,
             unique: true
           },
+          count: {
+            type: Number,
+            default: 0
+          },
           status: {
             type: String,
             default: 'pending'
@@ -384,6 +388,9 @@ const ioiSchema = new mongoose.Schema({
         tc_name: {
           type: String,
           unique: true
+        },
+        count: {
+          type: Number
         },
         state: {
           type: String
