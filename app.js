@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== 'Production') {
 
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', "https://www.ideasmis.com"],
     credentials: true
   })
 )

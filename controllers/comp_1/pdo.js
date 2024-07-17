@@ -269,7 +269,7 @@ router.post(
       })
 
       if (existing_post) {
-        if (req.files[0]) {
+        if (req.files && req.files[0]) {
           const filePath = `uploads/${req.files[0].filename}`
           checkAndDeleteFile(filePath, err => {
             if (err) {
@@ -277,7 +277,7 @@ router.post(
             }
           })
         }
-        if (req.files[1]) {
+        if (req.files && req.files[1]) {
           const filePath = `uploads/${req.files[1].filename}`
           checkAndDeleteFile(filePath, err => {
             if (err) {
@@ -309,7 +309,7 @@ router.post(
         'jk:',
         JSON.stringify(items.no_of_tvet_sensitizations_conducted_by_school)
       )
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         items.student_enrollment_data_doc_pdf = req.files[1].filename
       }
       console.log('Formatted items:', JSON.stringify(items))
@@ -380,7 +380,7 @@ router.post(
         matchedEntry
       })
     } catch (err) {
-      if (req.files[0]) {
+      if (req.files && req.files[0]) {
         const filePath = `uploads/${req.files[0].filename}`
         checkAndDeleteFile(filePath, err => {
           if (err) {
@@ -388,7 +388,7 @@ router.post(
           }
         })
       }
-      if (req.files[1]) {
+      if (req.files && req.files[1]) {
         const filePath = `uploads/${req.files[1].filename}`
         checkAndDeleteFile(filePath, err => {
           if (err) {
@@ -454,6 +454,7 @@ router.get(
       ] = { $elemMatch: { tc_name: req.query.tc_name } }
 
       const data = await Pdo_comp1.findOne(query).maxTimeMS(10000)
+      console.log(data)
       if (!data) return res.status(400).json('Tc data not found')
 
       const tc_collection =
@@ -513,6 +514,7 @@ router.put(
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
+      console.log("items:", items)
       const found_post_exists = await Pdo_comp1.findOne({
         [`female_enrollment_rate_in_project_supportedTc.${items.jurisdiction}_tc`]:
           { $elemMatch: { _id: req.params.post_id } }
@@ -590,12 +592,17 @@ router.put(
           100
       }
 
+      //delete items._id;  //Deleting id before updating the database 
+
+      console.log("Updating sub-document with items:", items);
+
       await Pdo_comp1.findOneAndUpdate(
         {
           [`female_enrollment_rate_in_project_supportedTc.${items.jurisdiction}_tc._id`]:
             req.params.post_id
         },
         { $set: items },
+        // { $set: { [`female_enrollment_rate_in_project_supportedTc.${items.jurisdiction}_tc.$`]: items } },
         { upsert: true, new: true }
       )
 
@@ -662,7 +669,7 @@ router.put(
       const found_post_exists = await Pdo_comp1.findOne({
         [`beneficiaries_of_job_focused_interventions.${items.jurisdiction}_tc`]:
           {
-            $elemMatch: { _id: new mongoose.Types.ObjectId(req.params.post_id) }
+            $elemMatch: { _id: req.params.post_id }
           }
       })
       if (!found_post_exists) {
@@ -974,11 +981,13 @@ router.get(
 
 // PUT REQUESTS FOR UPDATING STATUS FILEDS OF DATA ENTRY POST
 
+// pdo 2 error >>> 500: Err: MongoServerError: Plan executor error during findAndModify :: caused by :: Performing an update on the path '_id' would modify the immutable field '_id'
 router.put(
   '/update-status-for-female-enrollment-rate-in-project-supportedTc/:id',
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
+      
       const post_exists = await Pdo_comp1.findOne({
         [`female_enrollment_rate_in_project_supportedTc.${items.jurisdiction}_tc`]:
           {
@@ -1003,11 +1012,15 @@ router.put(
       res
         .status(200)
         .json({ success: true, message: 'Post updated', updated_post: subDoc })
+
+        
     } catch (err) {
       res.status(500).json(`Err message: ${err}`)
     }
   })
 )
+
+// pdo 3 error >>> 404: {"error":"Post not found"}
 router.put(
   '/update-status-for-beneficiaries-of-job-focused-interventions/:id',
   asyncErrCatcher(async (req, res) => {
@@ -1045,97 +1058,176 @@ router.put(
 
 // GET REQUESTS FOR GETTING SPECIFC PDOS WITH USER2 STATE
 
+// router.get(
+//   '/get-status-for-female-enrollment-rate-in-project-supportedTc-for-specific-state',
+//   asyncErrCatcher(async (req, res) => {
+//     try {
+//       const found_posts_exists = await Pdo_comp1.find({
+//         [`female_enrollment_rate_in_project_supportedTc.${req.query.state}_tc`]:
+//           { $exists: true }
+//       })
+//       const jury_posts =
+//         found_posts_exists[0].female_enrollment_rate_in_project_supportedTc[
+//           `${req.query.state}_tc`
+//         ]
+//       if (!found_posts_exists || jury_posts.length === 0)
+//         return res
+//           .status(400)
+//           .json(
+//             `${
+//               req.query.state.charAt(0).toUpperCase() +
+//               req.query.state.slice(1)
+//             } Tc Array empty`
+//           )
+//       const found_posts = jury_posts
+//         .filter(item => item.state === req.query.state)
+//         .flat()
+
+//       if (!found_posts || found_posts.length === 0)
+//         return res
+//           .status(400)
+//           .json(
+//             `${
+//               req.query.state.charAt(0).toUpperCase() +
+//               req.query.state.slice(1)
+//             } Tc with specified state not existent`
+//           )
+
+//       res.status(200).json({
+//         success: true,
+//         found_posts,
+//         state: req.query.state
+//       })
+//     } catch (err) {
+//       console.error(err)
+//       res.status(500).json({ Error: true, Message: err })
+//     }
+//   })
+// )
+// router.get(
+//   '/get-update-status-for-beneficiaries-of-job-focused-interventions-for-specific-state',
+//   asyncErrCatcher(async (req, res) => {
+//     try {
+//       const found_posts_exists = await Pdo_comp1.find({
+//         [`beneficiaries_of_job_focused_interventions.${req.query.jurisdiction}_tc`]:
+//           { $exists: true }
+//       })
+//       const jury_posts =
+//         found_posts_exists[0].beneficiaries_of_job_focused_interventions[
+//           `${req.query.jurisdiction}_tc`
+//         ]
+//       if (!found_posts_exists || jury_posts.length === 0)
+//         return res
+//           .status(400)
+//           .json(
+//             `${
+//               req.query.jurisdiction.charAt(0).toUpperCase() +
+//               req.query.jurisdiction.slice(1)
+//             } Tc Array empty`
+//           )
+//       const found_posts = jury_posts
+//         .filter(item => item.state === req.query.state)
+//         .flat()
+
+//       if (!found_posts || found_posts.length === 0)
+//         return res
+//           .status(400)
+//           .json(
+//             `${
+//               req.query.jurisdiction.charAt(0).toUpperCase() +
+//               req.query.jurisdiction.slice(1)
+//             } Tc with specified state not existent`
+//           )
+
+//       res.status(200).json({
+//         success: true,
+//         found_posts,
+//         jurisdiction: req.query.jurisdiction
+//       })
+//     } catch (err) {
+//       console.error(err)
+//       res.status(500).json({ Error: true, Message: err })
+//     }
+//   })
+// )
+
+// Modified GET REQUESTS FOR GETTING SPECIFC PDOS WITH USER2 STATE
 router.get(
   '/get-status-for-female-enrollment-rate-in-project-supportedTc-for-specific-state',
   asyncErrCatcher(async (req, res) => {
     try {
-      const found_posts_exists = await Pdo_comp1.find({
-        [`female_enrollment_rate_in_project_supportedTc.${req.query.jurisdiction}_tc`]:
-          { $exists: true }
-      })
-      const jury_posts =
-        found_posts_exists[0].female_enrollment_rate_in_project_supportedTc[
-          `${req.query.jurisdiction}_tc`
-        ]
-      if (!found_posts_exists || jury_posts.length === 0)
-        return res
-          .status(400)
-          .json(
-            `${
-              req.query.jurisdiction.charAt(0).toUpperCase() +
-              req.query.jurisdiction.slice(1)
-            } Tc Array empty`
-          )
-      const found_posts = jury_posts
-        .filter(item => item.state === req.query.state)
-        .flat()
+      const state = req.query.state;
 
-      if (!found_posts || found_posts.length === 0)
-        return res
-          .status(400)
-          .json(
-            `${
-              req.query.jurisdiction.charAt(0).toUpperCase() +
-              req.query.jurisdiction.slice(1)
-            } Tc with specified state not existent`
-          )
+      // Find documents where state_tc array exists and has elements
+      const found_posts_exists = await Pdo_comp1.find({
+        'female_enrollment_rate_in_project_supportedTc.state_tc': { $exists: true, $ne: [] }
+      });
+
+      if (!found_posts_exists || found_posts_exists.length === 0) {
+        return res.status(400).json(`State Tc Array is empty or not found`);
+      }
+
+      // Extract and filter the state_tc array based on the provided state
+      const jury_posts = found_posts_exists.map(doc =>
+        doc.female_enrollment_rate_in_project_supportedTc.state_tc
+      ).flat();
+
+      // Filter to find posts with the specific state
+      const found_posts = jury_posts.filter(item => item.state === state);
+
+      if (!found_posts || found_posts.length === 0) {
+        return res.status(400).json(`Tc with specified state not existent`);
+      }
 
       res.status(200).json({
         success: true,
         found_posts,
-        jurisdiction: req.query.jurisdiction
-      })
+        // state: state
+      });
     } catch (err) {
-      console.error(err)
-      res.status(500).json({ Error: true, Message: err })
+      console.error(err);
+      res.status(500).json({ Error: true, Message: err });
     }
   })
-)
+);
+
 router.get(
   '/get-update-status-for-beneficiaries-of-job-focused-interventions-for-specific-state',
   asyncErrCatcher(async (req, res) => {
     try {
-      const found_posts_exists = await Pdo_comp1.find({
-        [`beneficiaries_of_job_focused_interventions.${req.query.jurisdiction}_tc`]:
-          { $exists: true }
-      })
-      const jury_posts =
-        found_posts_exists[0].beneficiaries_of_job_focused_interventions[
-          `${req.query.jurisdiction}_tc`
-        ]
-      if (!found_posts_exists || jury_posts.length === 0)
-        return res
-          .status(400)
-          .json(
-            `${
-              req.query.jurisdiction.charAt(0).toUpperCase() +
-              req.query.jurisdiction.slice(1)
-            } Tc Array empty`
-          )
-      const found_posts = jury_posts
-        .filter(item => item.state === req.query.state)
-        .flat()
+      const state = req.query.state;
 
-      if (!found_posts || found_posts.length === 0)
-        return res
-          .status(400)
-          .json(
-            `${
-              req.query.jurisdiction.charAt(0).toUpperCase() +
-              req.query.jurisdiction.slice(1)
-            } Tc with specified state not existent`
-          )
+      // Find documents where state_tc array exists and has elements
+      const found_posts_exists = await Pdo_comp1.find({
+        'beneficiaries_of_job_focused_interventions.state_tc': { $exists: true, $ne: [] }
+      });
+
+      if (!found_posts_exists || found_posts_exists.length === 0) {
+        return res.status(400).json(`State Tc Array is empty or not found`);
+      }
+
+      // Extract and filter the state_tc array based on the provided state
+      const jury_posts = found_posts_exists.map(doc =>
+        doc.beneficiaries_of_job_focused_interventions.state_tc
+      ).flat();
+
+      // Filter to find posts with the specific state
+      const found_posts = jury_posts.filter(item => item.state === state);
+
+      if (!found_posts || found_posts.length === 0) {
+        return res.status(400).json(`Tc with specified state not existent`);
+      }
 
       res.status(200).json({
         success: true,
         found_posts,
-        jurisdiction: req.query.jurisdiction
-      })
+        // state: state
+      });
     } catch (err) {
-      console.error(err)
-      res.status(500).json({ Error: true, Message: err })
+      console.error(err);
+      res.status(500).json({ Error: true, Message: err });
     }
   })
-)
+);
 
 module.exports = router

@@ -182,13 +182,13 @@ router.put(
         return res.status(400).json({ Message: 'Subdocument not found' })
       }
 
-      items.awards.forEach(item => {
-        if (!subDoc.awards.includes(item)) {
-          subDoc.awards.push(item)
-        }
-      })
+      // items.awards.forEach(item => {
+      //   if (!subDoc.awards.includes(item)) {
+      //     subDoc.awards.push(item)
+      //   }
+      // })
 
-      delete items.awards
+      // delete items.awards
 
       Object.assign(subDoc, items)
 

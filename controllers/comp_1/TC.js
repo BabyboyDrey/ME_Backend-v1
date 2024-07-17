@@ -16,7 +16,7 @@ router.post(
 
       const post_exists = await Tc.findOne({
         [`${items.jurisdiction}_tc`]: {
-          $elemMatch: { institution_email: items.institution_email }
+          $elemMatch: { institution_name: items.institution_name }
         }
       })
 

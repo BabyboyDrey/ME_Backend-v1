@@ -10,6 +10,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
         investigated: {
           type: Number
         },
+        uninvestigated: {
+          type: Number
+        },
         resolved: {
           type: Number
         },
@@ -22,6 +25,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
           type: Number
         },
         investigated: {
+          type: Number
+        },
+        uninvestigated: {
           type: Number
         },
         resolved: {
@@ -38,6 +44,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
         investigated: {
           type: Number
         },
+        uninvestigated: {
+          type: Number
+        },
         resolved: {
           type: Number
         },
@@ -52,6 +61,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
         investigated: {
           type: Number
         },
+        uninvestigated: {
+          type: Number
+        },
         resolved: {
           type: Number
         },
@@ -64,6 +76,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
           type: Number
         },
         investigated: {
+          type: Number
+        },
+        uninvestigated: {
           type: Number
         },
         resolved: {
@@ -87,6 +102,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
         investigated: {
           type: Number
         },
+        uninvestigated: {
+          type: Number
+        },
         resolved: {
           type: Number
         },
@@ -99,6 +117,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
           type: Number
         },
         investigated: {
+          type: Number
+        },
+        uninvestigated: {
           type: Number
         },
         resolved: {
@@ -115,6 +136,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
         investigated: {
           type: Number
         },
+        uninvestigated: {
+          type: Number
+        },
         resolved: {
           type: Number
         },
@@ -129,6 +153,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
         investigated: {
           type: Number
         },
+        uninvestigated: {
+          type: Number
+        },
         resolved: {
           type: Number
         },
@@ -141,6 +168,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
           type: Number
         },
         investigated: {
+          type: Number
+        },
+        uninvestigated: {
           type: Number
         },
         resolved: {

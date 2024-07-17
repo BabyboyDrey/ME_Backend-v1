@@ -73,6 +73,9 @@ const teachersSchema = new mongoose.Schema({
   ],
   state_tc: [
     {
+      school_state_location: {
+        type: String
+      },
       name: {
         type: String
       },

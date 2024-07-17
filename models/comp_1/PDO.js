@@ -158,7 +158,7 @@ const pdoSchema = new mongoose.Schema({
             type: Number
           },
           labour_market_workers: {
-            type: String
+            type: Number
           },
           unemployed: {
             type: Number

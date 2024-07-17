@@ -34,7 +34,7 @@ const studentBioSchema = new mongoose.Schema({
         type: String
       },
       reg_num: {
-        type: Number
+        type: String
       },
       married: {
         type: String
@@ -115,6 +115,9 @@ const studentBioSchema = new mongoose.Schema({
   ],
   state_tc: [
     {
+      school_state_location: {
+        type: String
+      },
       school_type: {
         type: String
       },
