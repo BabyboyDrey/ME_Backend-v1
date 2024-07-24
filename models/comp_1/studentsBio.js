@@ -3,6 +3,9 @@ const mongoose = require('mongoose')
 const studentBioSchema = new mongoose.Schema({
   federal_tc: [
     {
+      special_need: {
+        type: String
+      },
       school_type: {
         type: String
       },
@@ -115,6 +118,9 @@ const studentBioSchema = new mongoose.Schema({
   ],
   state_tc: [
     {
+      special_need: {
+        type: String
+      },
       school_state_location: {
         type: String
       },
@@ -227,7 +233,10 @@ const studentBioSchema = new mongoose.Schema({
         type: String
       }
     }
-  ]
+  ],
+  total_number_of_students: {
+    type: Number
+  }
 })
 
 studentBioSchema.index({ 'federal_tc.reg_num': 1 })

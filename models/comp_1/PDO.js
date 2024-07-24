@@ -100,7 +100,16 @@ const pdoSchema = new mongoose.Schema({
         }
       }
     ],
+    total_federal_mean: {
+      type: Number
+    },
+    total_state_mean: {
+      type: Number
+    },
     percentage_of_female_students_across_tc: {
+      type: Number
+    },
+    total_aggregated_mean: {
       type: Number
     }
   },

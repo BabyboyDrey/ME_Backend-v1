@@ -174,4 +174,33 @@ router.delete(
   })
 )
 
+// USER 2/VALIDATOR GETTING ALL TC IN HIS STATE
+
+router.get(
+  '/get-validator-tc',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const query = `${req.query.jurisdiction}_tc`
+      const found_data = await Tc.findOne({
+        [`${query}.institution_state`]: req.query.state
+      })
+
+      if (!found_data) return res.status(404).json('No data with inputed state')
+
+      const filteredData = found_data[query].filter(
+        e => e.institution_state === req.query.state
+      )
+      res.status(200).json({
+        result: filteredData
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+
 module.exports = router

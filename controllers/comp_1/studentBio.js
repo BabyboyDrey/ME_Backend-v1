@@ -305,4 +305,64 @@ router.delete(
   })
 )
 
+// USER 2/VALIDATOR GETTING ALL STUDENTS IN HIS STATE
+
+router.get(
+  '/get-validator-students',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const query = `${req.query.jurisdiction}_tc`
+      const found_data = await Student.findOne({
+        [`${query}.school_state_location`]: req.query.state
+      })
+      if (!found_data) return res.status(404).json('No data with inputed state')
+
+      const filteredData = found_data[query].filter(
+        e => e.school_state_location === req.query.state
+      )
+
+      res.status(200).json({
+        result: filteredData
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+// USER 3/NATIONAL ADMIN GETTING ALL STUDENTS
+
+router.get(
+  '/get-national-admin-students',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const found_data = await Student.findOne({})
+      if (!found_data) return res.status(404).json('No students found')
+
+      const federal_students_count = found_data.federal_tc.length
+      const state_students_count = found_data.state_tc.length
+      const total_count = federal_students_count + state_students_count
+
+      found_data.total_number_of_students = total_count
+      await found_data.save()
+      res.status(200).json({
+        result: {
+          total_count,
+          federal_students_count,
+          state_students_count
+        }
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+
 module.exports = router

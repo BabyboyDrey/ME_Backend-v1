@@ -136,4 +136,112 @@ router.put(
   })
 )
 
+// USER 2/VALIDATOR GETTING ALL CCS IN HIS STATE
+
+router.get(
+  '/get-validator-ccs',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const query = `${req.query.jurisdiction}_tc`
+      const found_data = await CCS.findOne({
+        [`${query}.state`]: req.query.state
+      })
+      if (!found_data) return res.status(404).json('No data with inputed state')
+
+      const filteredData = found_data[query].filter(
+        e => e.state === req.query.state
+      )
+
+      res.status(200).json({
+        result: filteredData
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+
+// USER 3|NATIONAL ADMIN GET COUNT NUMBER OF ALL SUBFIELDS AND SUBDOCUMENTS AND DOCUMENT.
+
+router.get(
+  '/get-national-admin-all-count',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const found_data = await CCS.findOne({}).maxTimeMS(50000)
+      if (!found_data) return res.status(404).json('No teachers found')
+
+      const federal_ccs = found_data.federal_tc.map(item => item.toObject())
+      const state_ccs = found_data.state_tc.map(item => item.toObject())
+      const result = {
+        data_federal: {
+          reported: 0,
+          investigated: 0,
+          uninvestigated: 0,
+          resolved: 0,
+          unresolved: 0
+        },
+        data_state: {
+          reported: 0,
+          investigated: 0,
+          uninvestigated: 0,
+          resolved: 0,
+          unresolved: 0
+        }
+      }
+      federal_ccs.map(obj => {
+        Object.keys(obj).forEach(key => {
+          if (
+            key !== '_id' &&
+            typeof obj[key] === 'object' &&
+            obj[key] !== null &&
+            !Array.isArray(obj[key])
+          ) {
+            result.data_federal.reported += obj[key].reported
+            result.data_federal.investigated += obj[key].investigated
+            result.data_federal.uninvestigated += obj[key].uninvestigated
+            result.data_federal.resolved += obj[key].resolved
+            result.data_federal.unresolved += obj[key].unresolved
+          }
+        })
+      })
+      state_ccs.map(obj => {
+        Object.keys(obj).forEach(key => {
+          if (
+            key !== '_id' &&
+            typeof obj[key] === 'object' &&
+            obj[key] !== null &&
+            !Array.isArray(obj[key])
+          ) {
+            result.data_state.reported += obj[key].reported
+            result.data_state.investigated += obj[key].investigated
+            result.data_state.uninvestigated += obj[key].uninvestigated
+            result.data_state.resolved += obj[key].resolved
+            result.data_state.unresolved += obj[key].unresolved
+          }
+        })
+      })
+
+      found_data.total_aggregated_results = result
+
+      await found_data.save()
+
+      res.status(200).json({
+        success: true,
+
+        result
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+
 module.exports = router

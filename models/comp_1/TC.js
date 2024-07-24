@@ -3,6 +3,15 @@ const mongoose = require('mongoose')
 const tcSchema = new mongoose.Schema({
   federal_tc: [
     {
+      longitude: {
+        type: String
+      },
+      latitude: {
+        type: String
+      },
+      principal_name: {
+        type: String
+      },
       institution_code: {
         type: Number
       },
@@ -66,6 +75,15 @@ const tcSchema = new mongoose.Schema({
   ],
   state_tc: [
     {
+      longitude: {
+        type: String
+      },
+      latitude: {
+        type: String
+      },
+      principal_name: {
+        type: String
+      },
       institution_code: {
         type: Number
       },
@@ -129,7 +147,7 @@ const tcSchema = new mongoose.Schema({
   ]
 })
 
-tcSchema.index({ 'federal_tc.institution_email': 1 })
-tcSchema.index({ 'state_tc.institution_email': 1 })
+tcSchema.index({ 'federal_tc.institution_name': 1 })
+tcSchema.index({ 'state_tc.institution_name': 1 })
 
 module.exports = Tc = mongoose.model('Tc', tcSchema)

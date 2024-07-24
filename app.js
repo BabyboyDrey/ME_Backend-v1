@@ -9,6 +9,8 @@ const student_bio_comp1_routes = require('./controllers/comp_1/studentBio')
 const tc_comp1_routes = require('./controllers/comp_1/TC')
 const teachers_comp1_routes = require('./controllers/comp_1/Teachers')
 const ccs_comp1_routes = require('./controllers/comp_1/crossCuttingIssues')
+const project_summary_comp1_routes = require('./controllers/comp_1/projectSummary')
+const general_activities_comp1_routes = require('./controllers/comp_1/generalActivities')
 const path = require('path')
 const app = express()
 
@@ -20,7 +22,7 @@ if (process.env.NODE_ENV !== 'Production') {
 
 app.use(
   cors({
-    origin: ['http://localhost:3000', "https://www.ideasmis.com"],
+    origin: ['http://localhost:3000', 'https://www.ideasmis.com'],
     credentials: true
   })
 )
@@ -34,6 +36,8 @@ app.use('/api/v1/student/c1', student_bio_comp1_routes)
 app.use('/api/v1/tc/c1', tc_comp1_routes)
 app.use('/api/v1/teachers/c1', teachers_comp1_routes)
 app.use('/api/v1/ccs/c1', ccs_comp1_routes)
+app.use('/api/v1/ps/c1', project_summary_comp1_routes)
+app.use('/api/v1/ga/c1', general_activities_comp1_routes)
 connectDb()
 
 process.on('uncaughtException', err => {

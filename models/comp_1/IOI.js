@@ -91,7 +91,13 @@ const ioiSchema = new mongoose.Schema({
             type: String
           }
         }
-      ]
+      ],
+      total_federal_count: {
+        type: Number
+      },
+      total_state_count: {
+        type: Number
+      }
     },
   no_of_training_programs_delivered_monitored: {
     federal_tc: [
@@ -178,7 +184,13 @@ const ioiSchema = new mongoose.Schema({
           type: String
         }
       }
-    ]
+    ],
+    total_federal_count: {
+      type: Number
+    },
+    total_state_count: {
+      type: Number
+    }
   },
   no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth:
     {
@@ -278,7 +290,13 @@ const ioiSchema = new mongoose.Schema({
             type: String
           }
         }
-      ]
+      ],
+      total_federal_count: {
+        type: Number
+      },
+      total_state_count: {
+        type: Number
+      }
     },
   no_of_fully_functioning_upgraded_workshops_in_supported_tc: {
     federal_tc: [
@@ -403,7 +421,17 @@ const ioiSchema = new mongoose.Schema({
           type: String
         }
       }
-    ]
+    ],
+
+    total_federal_count: {
+      type: Number
+    },
+    total_state_count: {
+      type: Number
+    }
+  },
+  total_aggregated_count: {
+    type: Number
   }
 })
 

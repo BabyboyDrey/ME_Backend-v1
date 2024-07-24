@@ -3,6 +3,9 @@ const mongoose = require('mongoose')
 const teachersSchema = new mongoose.Schema({
   federal_tc: [
     {
+      special_need: {
+        type: String
+      },
       name: {
         type: String
       },
@@ -66,13 +69,16 @@ const teachersSchema = new mongoose.Schema({
       did_you_participate_in_the_ideas_tti_training: {
         type: String
       },
-      tc_name:{
+      tc_name: {
         type: String
       }
     }
   ],
   state_tc: [
     {
+      special_need: {
+        type: String
+      },
       school_state_location: {
         type: String
       },
@@ -139,11 +145,14 @@ const teachersSchema = new mongoose.Schema({
       did_you_participate_in_the_ideas_tti_training: {
         type: String
       },
-      tc_name:{
+      tc_name: {
         type: String
       }
     }
-  ]
+  ],
+  total_number_of_teachers: {
+    type: Number
+  }
 })
 
 teachersSchema.index({ 'federal_tc.email': 1 })

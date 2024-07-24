@@ -187,7 +187,10 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
         type: String
       }
     }
-  ]
+  ],
+  total_aggregated_results: {
+    type: Object
+  }
 })
 
 crossCuttingIssuesSchema.index({ 'federal_tc.tc_name': 1 })

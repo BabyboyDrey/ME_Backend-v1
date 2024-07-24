@@ -178,4 +178,65 @@ router.delete(
   })
 )
 
+// USER 2/VALIDATOR GETTING ALL TEACHERS IN HIS STATE
+
+router.get(
+  '/get-validator-teachers',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const query = `${req.query.jurisdiction}_tc`
+      const found_data = await Teachers.findOne({
+        [`${query}.school_state_location`]: req.query.state
+      })
+
+      const filteredData = found_data[query].filter(
+        e => e.school_state_location === req.query.state
+      )
+      if (!found_data) return res.status(404).json('No data with inputed state')
+
+      res.status(200).json({
+        result: filteredData
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+
+// USER 3/NATIONAL ADMIN GETTING ALL TEACHERS
+
+router.get(
+  '/get-national-admin-teachers',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const found_data = await Teachers.findOne({})
+      if (!found_data) return res.status(404).json('No teachers found')
+
+      const federal_teachers_count = found_data.federal_tc.length
+      const state_teachers_count = found_data.state_tc.length
+      const total_count = federal_teachers_count + state_teachers_count
+
+      found_data.total_number_of_teachers = total_count
+      await found_data.save()
+      res.status(200).json({
+        result: {
+          total_count,
+          federal_teachers_count,
+          state_teachers_count
+        }
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+
 module.exports = router
