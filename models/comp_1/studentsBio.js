@@ -3,6 +3,9 @@ const mongoose = require('mongoose')
 const studentBioSchema = new mongoose.Schema({
   federal_tc: [
     {
+      class: {
+        type: String
+      },
       special_need: {
         type: String
       },
@@ -118,6 +121,9 @@ const studentBioSchema = new mongoose.Schema({
   ],
   state_tc: [
     {
+      class: {
+        type: String
+      },
       special_need: {
         type: String
       },
