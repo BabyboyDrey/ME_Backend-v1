@@ -3,6 +3,30 @@ const mongoose = require('mongoose')
 const teachersSchema = new mongoose.Schema({
   federal_tc: [
     {
+      occupational_training: {
+        digital_literacy_training: {
+          type: Boolean,
+          default: false
+        },
+        pedagogy_training: {
+          type: Boolean,
+          default: false
+        },
+        trade_area: {
+          type: String
+        }
+      },
+      certified_as_NSQF_assesors: {
+        type: Boolean,
+        default: false
+      },
+      service_type: {
+        type: String
+      },
+      certified_as_NSQF_verifiers: {
+        type: Boolean,
+        default: false
+      },
       special_need: {
         type: String
       },
@@ -76,6 +100,30 @@ const teachersSchema = new mongoose.Schema({
   ],
   state_tc: [
     {
+      occupational_training: {
+        digital_literacy_training: {
+          type: Boolean,
+          default: false
+        },
+        pedagogy_training: {
+          type: Boolean,
+          default: false
+        },
+        trade_area: {
+          type: String
+        }
+      },
+      certified_as_NSQF_assesors: {
+        type: Boolean,
+        default: false
+      },
+      certified_as_NSQF_verifiers: {
+        type: Boolean,
+        default: false
+      },
+      service_type: {
+        type: String
+      },
       special_need: {
         type: String
       },

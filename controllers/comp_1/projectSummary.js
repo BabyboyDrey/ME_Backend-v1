@@ -181,4 +181,36 @@ router.put(
   })
 )
 
+// GET REQUEST
+
+router.get(
+  '/get-project-summary',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const found_data = await Projectsummary.find({})
+
+      if (!found_data || found_data.length === 0) {
+        res.status(404).json({
+          Error: true,
+          message: 'No Project Summary found'
+        })
+      }
+
+      res.status(200).json({
+        Success: true,
+        found_data: {
+          federal_tc: found_data[0].federal_tc,
+          state_tc: found_data[0].state_tc
+        }
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+
 module.exports = router

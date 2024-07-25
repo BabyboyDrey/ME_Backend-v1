@@ -151,9 +151,110 @@ router.get(
       const filteredData = found_data[query].filter(
         e => e.state === req.query.state
       )
+      const result = {
+        data: {
+          gender_based_violence: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          grievance_redress_mechanisms: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          fraud_corruption: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          social_safeguard_issues: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          environmental_safeguard_issues: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          }
+        }
+      }
+      filteredData.forEach(obj => {
+        if (obj.gender_based_violence) {
+          result.data.gender_based_violence.reported +=
+            obj.gender_based_violence.reported
+          result.data.gender_based_violence.investigated +=
+            obj.gender_based_violence.investigated
+          result.data.gender_based_violence.uninvestigated +=
+            obj.gender_based_violence.uninvestigated
+          result.data.gender_based_violence.resolved +=
+            obj.gender_based_violence.resolved
+          result.data.gender_based_violence.unresolved +=
+            obj.gender_based_violence.unresolved
+        }
+        if (obj.grievance_redress_mechanisms) {
+          result.data.grievance_redress_mechanisms.reported +=
+            obj.grievance_redress_mechanisms.reported
+          result.data.grievance_redress_mechanisms.investigated +=
+            obj.grievance_redress_mechanisms.investigated
+          result.data.grievance_redress_mechanisms.uninvestigated +=
+            obj.grievance_redress_mechanisms.uninvestigated
+          result.data.grievance_redress_mechanisms.resolved +=
+            obj.grievance_redress_mechanisms.resolved
+          result.data.grievance_redress_mechanisms.unresolved +=
+            obj.grievance_redress_mechanisms.unresolved
+        }
+        if (obj.fraud_corruption) {
+          result.data.fraud_corruption.reported += obj.fraud_corruption.reported
+          result.data.fraud_corruption.investigated +=
+            obj.fraud_corruption.investigated
+          result.data.fraud_corruption.uninvestigated +=
+            obj.fraud_corruption.uninvestigated
+          result.data.fraud_corruption.resolved += obj.fraud_corruption.resolved
+          result.data.fraud_corruption.unresolved +=
+            obj.fraud_corruption.unresolved
+        }
+        if (obj.social_safeguard_issues) {
+          result.data.social_safeguard_issues.reported +=
+            obj.social_safeguard_issues.reported
+          result.data.social_safeguard_issues.investigated +=
+            obj.social_safeguard_issues.investigated
+          result.data.social_safeguard_issues.uninvestigated +=
+            obj.social_safeguard_issues.uninvestigated
+          result.data.social_safeguard_issues.resolved +=
+            obj.social_safeguard_issues.resolved
+          result.data.social_safeguard_issues.unresolved +=
+            obj.social_safeguard_issues.unresolved
+        }
+        if (obj.environmental_safeguard_issues) {
+          result.data.environmental_safeguard_issues.reported +=
+            obj.environmental_safeguard_issues.reported
+          result.data.environmental_safeguard_issues.investigated +=
+            obj.environmental_safeguard_issues.investigated
+          result.data.environmental_safeguard_issues.uninvestigated +=
+            obj.environmental_safeguard_issues.uninvestigated
+          result.data.environmental_safeguard_issues.resolved +=
+            obj.environmental_safeguard_issues.resolved
+          result.data.environmental_safeguard_issues.unresolved +=
+            obj.environmental_safeguard_issues.unresolved
+        }
+      })
 
+      await found_data.save()
       res.status(200).json({
-        result: filteredData
+        Jurisdiction_result: filteredData,
+        Aggregated_data: result
       })
     } catch (err) {
       console.error(err)
@@ -168,7 +269,7 @@ router.get(
 // USER 3|NATIONAL ADMIN GET COUNT NUMBER OF ALL SUBFIELDS AND SUBDOCUMENTS AND DOCUMENT.
 
 router.get(
-  '/get-national-admin-all-count',
+  '/get-national_admin-subdocs',
   asyncErrCatcher(async (req, res) => {
     try {
       const found_data = await CCS.findOne({}).maxTimeMS(50000)
@@ -178,61 +279,300 @@ router.get(
       const state_ccs = found_data.state_tc.map(item => item.toObject())
       const result = {
         data_federal: {
-          reported: 0,
-          investigated: 0,
-          uninvestigated: 0,
-          resolved: 0,
-          unresolved: 0
+          gender_based_violence: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          grievance_redress_mechanisms: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          fraud_corruption: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          social_safeguard_issues: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          environmental_safeguard_issues: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          }
         },
         data_state: {
-          reported: 0,
-          investigated: 0,
-          uninvestigated: 0,
-          resolved: 0,
-          unresolved: 0
+          gender_based_violence: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          grievance_redress_mechanisms: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          fraud_corruption: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          social_safeguard_issues: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          },
+          environmental_safeguard_issues: {
+            reported: 0,
+            investigated: 0,
+            uninvestigated: 0,
+            resolved: 0,
+            unresolved: 0
+          }
         }
       }
-      federal_ccs.map(obj => {
-        Object.keys(obj).forEach(key => {
-          if (
-            key !== '_id' &&
-            typeof obj[key] === 'object' &&
-            obj[key] !== null &&
-            !Array.isArray(obj[key])
-          ) {
-            result.data_federal.reported += obj[key].reported
-            result.data_federal.investigated += obj[key].investigated
-            result.data_federal.uninvestigated += obj[key].uninvestigated
-            result.data_federal.resolved += obj[key].resolved
-            result.data_federal.unresolved += obj[key].unresolved
-          }
-        })
+      federal_ccs.forEach(obj => {
+        if (obj.gender_based_violence) {
+          result.data_federal.gender_based_violence.reported +=
+            obj.gender_based_violence.reported
+          result.data_federal.gender_based_violence.investigated +=
+            obj.gender_based_violence.investigated
+          result.data_federal.gender_based_violence.uninvestigated +=
+            obj.gender_based_violence.uninvestigated
+          result.data_federal.gender_based_violence.resolved +=
+            obj.gender_based_violence.resolved
+          result.data_federal.gender_based_violence.unresolved +=
+            obj.gender_based_violence.unresolved
+        }
+        if (obj.grievance_redress_mechanisms) {
+          result.data_federal.grievance_redress_mechanisms.reported +=
+            obj.grievance_redress_mechanisms.reported
+          result.data_federal.grievance_redress_mechanisms.investigated +=
+            obj.grievance_redress_mechanisms.investigated
+          result.data_federal.grievance_redress_mechanisms.uninvestigated +=
+            obj.grievance_redress_mechanisms.uninvestigated
+          result.data_federal.grievance_redress_mechanisms.resolved +=
+            obj.grievance_redress_mechanisms.resolved
+          result.data_federal.grievance_redress_mechanisms.unresolved +=
+            obj.grievance_redress_mechanisms.unresolved
+        }
+        if (obj.fraud_corruption) {
+          result.data_federal.fraud_corruption.reported +=
+            obj.fraud_corruption.reported
+          result.data_federal.fraud_corruption.investigated +=
+            obj.fraud_corruption.investigated
+          result.data_federal.fraud_corruption.uninvestigated +=
+            obj.fraud_corruption.uninvestigated
+          result.data_federal.fraud_corruption.resolved +=
+            obj.fraud_corruption.resolved
+          result.data_federal.fraud_corruption.unresolved +=
+            obj.fraud_corruption.unresolved
+        }
+        if (obj.social_safeguard_issues) {
+          result.data_federal.social_safeguard_issues.reported +=
+            obj.social_safeguard_issues.reported
+          result.data_federal.social_safeguard_issues.investigated +=
+            obj.social_safeguard_issues.investigated
+          result.data_federal.social_safeguard_issues.uninvestigated +=
+            obj.social_safeguard_issues.uninvestigated
+          result.data_federal.social_safeguard_issues.resolved +=
+            obj.social_safeguard_issues.resolved
+          result.data_federal.social_safeguard_issues.unresolved +=
+            obj.social_safeguard_issues.unresolved
+        }
+        if (obj.environmental_safeguard_issues) {
+          result.data_federal.environmental_safeguard_issues.reported +=
+            obj.environmental_safeguard_issues.reported
+          result.data_federal.environmental_safeguard_issues.investigated +=
+            obj.environmental_safeguard_issues.investigated
+          result.data_federal.environmental_safeguard_issues.uninvestigated +=
+            obj.environmental_safeguard_issues.uninvestigated
+          result.data_federal.environmental_safeguard_issues.resolved +=
+            obj.environmental_safeguard_issues.resolved
+          result.data_federal.environmental_safeguard_issues.unresolved +=
+            obj.environmental_safeguard_issues.unresolved
+        }
       })
-      state_ccs.map(obj => {
-        Object.keys(obj).forEach(key => {
-          if (
-            key !== '_id' &&
-            typeof obj[key] === 'object' &&
-            obj[key] !== null &&
-            !Array.isArray(obj[key])
-          ) {
-            result.data_state.reported += obj[key].reported
-            result.data_state.investigated += obj[key].investigated
-            result.data_state.uninvestigated += obj[key].uninvestigated
-            result.data_state.resolved += obj[key].resolved
-            result.data_state.unresolved += obj[key].unresolved
-          }
-        })
+      state_ccs.forEach(obj => {
+        if (obj.gender_based_violence) {
+          result.data_state.gender_based_violence.reported +=
+            obj.gender_based_violence.reported
+          result.data_state.gender_based_violence.investigated +=
+            obj.gender_based_violence.investigated
+          result.data_state.gender_based_violence.uninvestigated +=
+            obj.gender_based_violence.uninvestigated
+          result.data_state.gender_based_violence.resolved +=
+            obj.gender_based_violence.resolved
+          result.data_state.gender_based_violence.unresolved +=
+            obj.gender_based_violence.unresolved
+        }
+        if (obj.grievance_redress_mechanisms) {
+          result.data_state.grievance_redress_mechanisms.reported +=
+            obj.grievance_redress_mechanisms.reported
+          result.data_state.grievance_redress_mechanisms.investigated +=
+            obj.grievance_redress_mechanisms.investigated
+          result.data_state.grievance_redress_mechanisms.uninvestigated +=
+            obj.grievance_redress_mechanisms.uninvestigated
+          result.data_state.grievance_redress_mechanisms.resolved +=
+            obj.grievance_redress_mechanisms.resolved
+          result.data_state.grievance_redress_mechanisms.unresolved +=
+            obj.grievance_redress_mechanisms.unresolved
+        }
+        if (obj.fraud_corruption) {
+          result.data_state.fraud_corruption.reported +=
+            obj.fraud_corruption.reported
+          result.data_state.fraud_corruption.investigated +=
+            obj.fraud_corruption.investigated
+          result.data_state.fraud_corruption.uninvestigated +=
+            obj.fraud_corruption.uninvestigated
+          result.data_state.fraud_corruption.resolved +=
+            obj.fraud_corruption.resolved
+          result.data_state.fraud_corruption.unresolved +=
+            obj.fraud_corruption.unresolved
+        }
+        if (obj.social_safeguard_issues) {
+          result.data_state.social_safeguard_issues.reported +=
+            obj.social_safeguard_issues.reported
+          result.data_state.social_safeguard_issues.investigated +=
+            obj.social_safeguard_issues.investigated
+          result.data_state.social_safeguard_issues.uninvestigated +=
+            obj.social_safeguard_issues.uninvestigated
+          result.data_state.social_safeguard_issues.resolved +=
+            obj.social_safeguard_issues.resolved
+          result.data_state.social_safeguard_issues.unresolved +=
+            obj.social_safeguard_issues.unresolved
+        }
+        if (obj.environmental_safeguard_issues) {
+          result.data_state.environmental_safeguard_issues.reported +=
+            obj.environmental_safeguard_issues.reported
+          result.data_state.environmental_safeguard_issues.investigated +=
+            obj.environmental_safeguard_issues.investigated
+          result.data_state.environmental_safeguard_issues.uninvestigated +=
+            obj.environmental_safeguard_issues.uninvestigated
+          result.data_state.environmental_safeguard_issues.resolved +=
+            obj.environmental_safeguard_issues.resolved
+          result.data_state.environmental_safeguard_issues.unresolved +=
+            obj.environmental_safeguard_issues.unresolved
+        }
       })
+      const total_aggregated_results = {
+        gender_based_violence: {
+          reported:
+            result.data_federal.gender_based_violence.reported +
+            result.data_state.gender_based_violence.reported,
+          investigated:
+            result.data_federal.gender_based_violence.investigated +
+            result.data_state.gender_based_violence.investigated,
+          uninvestigated:
+            result.data_federal.gender_based_violence.uninvestigated +
+            result.data_state.gender_based_violence.uninvestigated,
+          resolved:
+            result.data_federal.gender_based_violence.resolved +
+            result.data_state.gender_based_violence.resolved,
+          unresolved:
+            result.data_federal.gender_based_violence.unresolved +
+            result.data_state.gender_based_violence.unresolved
+        },
+        grievance_redress_mechanisms: {
+          reported:
+            result.data_federal.grievance_redress_mechanisms.reported +
+            result.data_state.grievance_redress_mechanisms.reported,
+          investigated:
+            result.data_federal.grievance_redress_mechanisms.investigated +
+            result.data_state.grievance_redress_mechanisms.investigated,
+          uninvestigated:
+            result.data_federal.grievance_redress_mechanisms.uninvestigated +
+            result.data_state.grievance_redress_mechanisms.uninvestigated,
+          resolved:
+            result.data_federal.grievance_redress_mechanisms.resolved +
+            result.data_state.grievance_redress_mechanisms.resolved,
+          unresolved:
+            result.data_federal.grievance_redress_mechanisms.unresolved +
+            result.data_state.grievance_redress_mechanisms.unresolved
+        },
+        fraud_corruption: {
+          reported:
+            result.data_federal.fraud_corruption.reported +
+            result.data_state.fraud_corruption.reported,
+          investigated:
+            result.data_federal.fraud_corruption.investigated +
+            result.data_state.fraud_corruption.investigated,
+          uninvestigated:
+            result.data_federal.fraud_corruption.uninvestigated +
+            result.data_state.fraud_corruption.uninvestigated,
+          resolved:
+            result.data_federal.fraud_corruption.resolved +
+            result.data_state.fraud_corruption.resolved,
+          unresolved:
+            result.data_federal.fraud_corruption.unresolved +
+            result.data_state.fraud_corruption.unresolved
+        },
+        social_safeguard_issues: {
+          reported:
+            result.data_federal.social_safeguard_issues.reported +
+            result.data_state.social_safeguard_issues.reported,
+          investigated:
+            result.data_federal.social_safeguard_issues.investigated +
+            result.data_state.social_safeguard_issues.investigated,
+          uninvestigated:
+            result.data_federal.social_safeguard_issues.uninvestigated +
+            result.data_state.social_safeguard_issues.uninvestigated,
+          resolved:
+            result.data_federal.social_safeguard_issues.resolved +
+            result.data_state.social_safeguard_issues.resolved,
+          unresolved:
+            result.data_federal.social_safeguard_issues.unresolved +
+            result.data_state.social_safeguard_issues.unresolved
+        },
+        environmental_safeguard_issues: {
+          reported:
+            result.data_federal.environmental_safeguard_issues.reported +
+            result.data_state.environmental_safeguard_issues.reported,
+          investigated:
+            result.data_federal.environmental_safeguard_issues.investigated +
+            result.data_state.environmental_safeguard_issues.investigated,
+          uninvestigated:
+            result.data_federal.environmental_safeguard_issues.uninvestigated +
+            result.data_state.environmental_safeguard_issues.uninvestigated,
+          resolved:
+            result.data_federal.environmental_safeguard_issues.resolved +
+            result.data_state.environmental_safeguard_issues.resolved,
+          unresolved:
+            result.data_federal.environmental_safeguard_issues.unresolved +
+            result.data_state.environmental_safeguard_issues.unresolved
+        }
+      }
 
-      found_data.total_aggregated_results = result
-
+      found_data.total_aggregated_results = total_aggregated_results
+      found_data.total_disaggregated_results = result
       await found_data.save()
 
       res.status(200).json({
         success: true,
-
-        result
+        result,
+        total_aggregated_results
       })
     } catch (err) {
       console.error(err)

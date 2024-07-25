@@ -3,6 +3,9 @@ const mongoose = require('mongoose')
 const projectSummarySchema = new mongoose.Schema({
   federal_tc: [
     {
+      total_no_of_students_in_tc: {
+        type: Number
+      },
       name_of_college: {
         type: String
       },
@@ -41,6 +44,9 @@ const projectSummarySchema = new mongoose.Schema({
   ],
   state_tc: [
     {
+      total_no_of_students_in_tc: {
+        type: Number
+      },
       name_of_college: {
         type: String
       },

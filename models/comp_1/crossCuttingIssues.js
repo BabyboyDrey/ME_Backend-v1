@@ -190,6 +190,9 @@ const crossCuttingIssuesSchema = new mongoose.Schema({
   ],
   total_aggregated_results: {
     type: Object
+  },
+  total_disaggregated_results: {
+    type: Object
   }
 })
 
