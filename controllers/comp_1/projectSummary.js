@@ -187,21 +187,34 @@ router.get(
   '/get-project-summary',
   asyncErrCatcher(async (req, res) => {
     try {
-      const found_data = await Projectsummary.find({})
+      const { jurisdiction } = req.query
+
+      if (
+        !jurisdiction ||
+        (jurisdiction !== 'federal' && jurisdiction !== 'state')
+      ) {
+        return res.status(400).json({
+          Error: true,
+          message: 'Invalid jurisdiction specified'
+        })
+      }
+
+      const found_data = await Projectsummary.find({
+        [`${jurisdiction}_tc`]: {
+          $exists: true
+        }
+      })
 
       if (!found_data || found_data.length === 0) {
-        res.status(404).json({
+        return res.status(404).json({
           Error: true,
-          message: 'No Project Summary found'
+          message: 'No data found for the specified jurisdiction'
         })
       }
 
       res.status(200).json({
-        Success: true,
-        found_data: {
-          federal_tc: found_data[0].federal_tc,
-          state_tc: found_data[0].state_tc
-        }
+        success: true,
+        data: found_data[0][`${jurisdiction}_tc`]
       })
     } catch (err) {
       console.error(err)
