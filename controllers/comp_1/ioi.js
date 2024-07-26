@@ -89,7 +89,11 @@ router.post(
 
 router.post(
   '/make-post-for-no-of-supported-tc',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'report_pdf', maxCount: 1 },
+    { name: 'all_signed_mous_pdf', maxCount: 4 },
+    { name: 'minutes_pdf', maxCount: 4 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const {
@@ -125,21 +129,32 @@ router.post(
       new_tc_data.tc_name = tc_name
       new_tc_data.state = state
       new_tc_data.email_of_data_entry_personnel = email
-      if (req.files && req.files[0] && sch_ideas_project_team_established) {
+      if (
+        req.files &&
+        req.files['report_pdf'] &&
+        sch_ideas_project_team_established
+      ) {
         new_tc_data.sch_ideas_project_team_established.report_pdf =
-          req.files[0].filename
+          req.files['report_pdf'][0].filename
       }
       if (
         req.files &&
-        req.files[1] &&
+        req.files['all_signed_mous_pdf'] &&
+        req.files['all_signed_mous_pdf'].length > 0 &&
         no_of_mous_signed_with_industry_partners
       ) {
         new_tc_data.no_of_mous_signed_with_industry_partners.all_signed_mous_pdf =
-          req.files[1].filename
+          req.files['all_signed_mous_pdf'].map(file => file.filename)
       }
-      if (req.files && req.files[2] && no_of_times_ciu_met_over_past_year) {
-        new_tc_data.no_of_times_ciu_met_over_past_year.minutes_pdf =
-          req.files[2].filename
+      if (
+        req.files &&
+        req.files['minutes_pdf'] &&
+        req.files['minutes_pdf'].length > 0 &&
+        no_of_times_ciu_met_over_past_year
+      ) {
+        new_tc_data.no_of_times_ciu_met_over_past_year.minutes_pdf = req.files[
+          'minutes_pdf'
+        ].map(file => file.filename)
       }
 
       if (
@@ -170,31 +185,40 @@ router.post(
       }
 
       if (existingDoc) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            } else {
-              console.log(`Deleted File: ${req.files[0].filename}`)
+        if (req.files && req.files['report_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['report_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              } else {
+                console.log(
+                  `Deleted File: ${req.files['report_pdf'][0].filename}`
+                )
+              }
             }
+          )
+        }
+        if (req.files && req.files['all_signed_mous_pdf']) {
+          req.files['all_signed_mous_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              } else {
+                console.log(`Deleted File: ${file.filename}`)
+              }
+            })
           })
         }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            } else {
-              console.log(`Deleted File: ${req.files[1].filename}`)
-            }
-          })
-        }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            } else {
-              console.log(`Deleted File: ${req.files[2].filename}`)
-            }
+        if (req.files && req.files['minutes_pdf']) {
+          req.files['minutes_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              } else {
+                console.log(`Deleted File: ${file.filename}`)
+              }
+            })
           })
         }
         return res.status(400).json('TC data already inputed')
@@ -232,31 +256,40 @@ router.post(
       })
     } catch (err) {
       if (req.files) {
-        if (req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            } else {
-              console.log(`Deleted File: ${req.files[0].filename}`)
+        if (req.files && req.files['report_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['report_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              } else {
+                console.log(
+                  `Deleted File: ${req.files['report_pdf'][0].filename}`
+                )
+              }
             }
+          )
+        }
+        if (req.files && req.files['all_signed_mous_pdf']) {
+          req.files['all_signed_mous_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              } else {
+                console.log(`Deleted File: ${file.filename}`)
+              }
+            })
           })
         }
-        if (req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            } else {
-              console.log(`Deleted File: ${req.files[1].filename}`)
-            }
-          })
-        }
-        if (req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            } else {
-              console.log(`Deleted File: ${req.files[2].filename}`)
-            }
+        if (req.files && req.files['minutes_pdf']) {
+          req.files['minutes_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              } else {
+                console.log(`Deleted File: ${file.filename}`)
+              }
+            })
           })
         }
       }
@@ -268,7 +301,10 @@ router.post(
 
 router.post(
   '/make-post-no-of-training-programs-delivered-monitored',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'attendance_sheet_pdf', maxCount: 1 },
+    { name: 'latest_tc_status_report_pdf', maxCount: 4 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const new_tc_data = req.body
@@ -308,11 +344,18 @@ router.post(
           new_tc_data.no_of_internship_arrangements
       }
 
-      if (req.files && req.files[0]) {
-        new_tc_data.latest_tc_status_report_pdf = req.files[0].filename
+      if (
+        req.files &&
+        req.files['latest_tc_status_report_pdf'] &&
+        req.files['latest_tc_status_report_pdf'].length > 0
+      ) {
+        new_tc_data.latest_tc_status_report_pdf = req.files[
+          'latest_tc_status_report_pdf'
+        ].map(file => file.filename)
       }
-      if (req.files && req.files[1]) {
-        new_tc_data.attendance_sheet_pdf = req.files[1].filename
+      if (req.files && req.files['attendance_sheet_pdf']) {
+        new_tc_data.attendance_sheet_pdf =
+          req.files['attendance_sheet_pdf'][0].filename
       }
 
       let existingDoc
@@ -335,22 +378,29 @@ router.post(
       }
 
       if (existingDoc) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            } else {
-              console.log(`Deleted File: ${req.files[0].filename}`)
+        if (req.files && req.files['attendance_sheet_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['attendance_sheet_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              } else {
+                console.log(
+                  `Deleted File: ${req.files['attendance_sheet_pdf'][0].filename}`
+                )
+              }
             }
-          })
+          )
         }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            } else {
-              console.log(`Deleted File: ${req.files[1].filename}`)
-            }
+        if (req.files && req.files[latest_tc_status_report_pdf]) {
+          req.files['latest_tc_status_report_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              } else {
+                console.log(`Deleted File: ${file.filename}`)
+              }
+            })
           })
         }
         return res.status(400).json(`Tc data already inputed`)
@@ -387,22 +437,29 @@ router.post(
       })
     } catch (err) {
       console.error(err)
-      if (req.files && req.files[0]) {
-        fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          } else {
-            console.log(`Deleted File: ${req.files[0].filename}`)
+      if (req.files && req.files['attendance_sheet_pdf']) {
+        fs.unlink(
+          `uploads/${req.files['attendance_sheet_pdf'][0].filename}`,
+          unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            } else {
+              console.log(
+                `Deleted File: ${req.files['attendance_sheet_pdf'][0].filename}`
+              )
+            }
           }
-        })
+        )
       }
-      if (req.files && req.files[1]) {
-        fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          } else {
-            console.log(`Deleted File: ${req.files[1].filename}`)
-          }
+      if (req.files && req.files['latest_tc_status_report_pdf']) {
+        req.files['latest_tc_status_report_pdf'].forEach(file => {
+          fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            } else {
+              console.log(`Deleted File: ${file.filename}`)
+            }
+          })
         })
       }
       res.status(500).json(`Err making post. Message: ${err}`)
@@ -412,7 +469,11 @@ router.post(
 
 router.post(
   '/make-post-no-of-supported-tc-with-reporting-and-referral-mechanisms-for-gbv-affected-youth',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'school_gbv_policy_pdf', maxCount: 1 },
+    { name: 'sensitization_pdf', maxCount: 4 },
+    { name: 'reports_showing_addressed_complaints_box_pdf', maxCount: 4 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const {
@@ -467,23 +528,28 @@ router.post(
 
       if (
         req.files &&
-        req.files[0] &&
+        req.files['sensitization_pdf'] &&
+        req.files['sensitization_pdf'].length > 0 &&
         new_tc_data.gbv_sensitization_conducted_by_the_school
       ) {
         new_tc_data.gbv_sensitization_conducted_by_the_school.sensitization_pdf =
-          req.files[0].filename
+          req.files['sensitization_pdf'].map(file => file.filename)
       }
       if (
         req.files &&
-        req.files[1] &&
+        req.files['school_gbv_policy_pdf'] &&
         new_tc_data.gbv_policy_published_by_school
       ) {
         new_tc_data.gbv_policy_published_by_school.school_gbv_policy_pdf =
-          req.files[1].filename
+          req.files['school_gbv_policy_pdf'][0].filename
       }
-      if (req.files && req.files[2]) {
-        new_tc_data.reports_showing_addressed_complaints_box_pdf =
-          req.files[2].filename
+      if (
+        req.files &&
+        req.files['reports_showing_addressed_complaints_box_pdf']
+      ) {
+        new_tc_data.reports_showing_addressed_complaints_box_pdf = req.files[
+          'reports_showing_addressed_complaints_box_pdf'
+        ].map(file => file.filename)
       }
 
       let existingDoc
@@ -508,25 +574,37 @@ router.post(
       }
 
       if (existingDoc) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
+        if (
+          req.files &&
+          req.files['reports_showing_addressed_complaints_box_pdf']
+        ) {
+          req.files['reports_showing_addressed_complaints_box_pdf'].forEach(
+            file => {
+              fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+                if (unlinkErr) {
+                  console.error(unlinkErr)
+                }
+              })
             }
-          })
+          )
         }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
+        if (req.files && req.files['school_gbv_policy_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['school_gbv_policy_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
             }
-          })
+          )
         }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
+        if (req.files && req.files['sensitization_pdf']) {
+          req.files['sensitization_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
+            })
           })
         }
 
@@ -563,25 +641,37 @@ router.post(
           newDoc.no_of_supported_tc_with_reporting_and_referral_mechanisms_for_gbv_affected_youth
       })
     } catch (err) {
-      if (req.files && req.files[0]) {
-        fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
+      if (
+        req.files &&
+        req.files['reports_showing_addressed_complaints_box_pdf']
+      ) {
+        req.files['reports_showing_addressed_complaints_box_pdf'].forEach(
+          file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
+            })
           }
-        })
+        )
       }
-      if (req.files && req.files[1]) {
-        fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
+      if (req.files && req.files['school_gbv_policy_pdf']) {
+        fs.unlink(
+          `uploads/${req.files['school_gbv_policy_pdf'][0].filename}`,
+          unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            }
           }
-        })
+        )
       }
-      if (req.files && req.files[2]) {
-        fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
+      if (req.files && req.files['sensitization_pdf']) {
+        req.files['sensitization_pdf'].forEach(file => {
+          fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            }
+          })
         })
       }
       console.error(err)
@@ -592,15 +682,16 @@ router.post(
 
 router.post(
   '/make-post-no-of-fully-functioning-upgraded-workshops-in-supported-tc',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'doc_confirming_disbursment_received_pdf', maxCount: 1 },
+    { name: 'status_report_pdf', maxCount: 1 },
+    { name: 'ttis_status_report_pdf', maxCount: 1 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const new_tc_data = req.body
-      if (new_tc_data.no_of_workshops_renovated) {
-        new_tc_data.no_of_workshops_renovated = Number(
-          new_tc_data.no_of_workshops_renovated
-        )
-      }
+      console.log(JSON.stringify(new_tc_data))
+
       if (new_tc_data.initial_disbursement_of_250kusd_received) {
         new_tc_data.initial_disbursement_of_250kusd_received = {
           value: new_tc_data.initial_disbursement_of_250kusd_received
@@ -628,27 +719,27 @@ router.post(
 
       if (
         req.files &&
-        req.files[0] &&
+        req.files['doc_confirming_disbursment_received_pdf'] &&
         new_tc_data.initial_disbursement_of_250kusd_received
       ) {
         new_tc_data.initial_disbursement_of_250kusd_received.doc_confirming_disbursment_received_pdf =
-          req.files[0].filename
+          req.files['doc_confirming_disbursment_received_pdf'][0].filename
       }
       if (
         req.files &&
-        req.files[1] &&
+        req.files['status_report_pdf'] &&
         new_tc_data.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       ) {
         new_tc_data.no_of_workshops_equipped_with_modern_tools_and_ready_for_use.status_report_pdf =
-          req.files[1].filename
+          req.files['status_report_pdf'][0].filename
       }
       if (
         req.files &&
-        req.files[2] &&
+        req.files['ttis_status_report_pdf'] &&
         new_tc_data.no_of_ttis_trained_on_the_use_of_newly_installed_tools
       ) {
-        new_tc_data.no_of_ttis_trained_on_the_use_of_newly_installed_tools.status_report_pdf =
-          req.files[2].filename
+        new_tc_data.no_of_ttis_trained_on_the_use_of_newly_installed_tools.ttis_status_report_pdf =
+          req.files['ttis_status_report_pdf'][0].filename
       }
 
       if (
@@ -665,13 +756,15 @@ router.post(
         new_tc_data.training_of_ttis_on_the_use_of_newly_installed_tools
       ) {
         new_tc_data.fulfilled =
-          new_tc_data.no_of_workshops_equipped_with_modern_tools_and_ready_for_use >=
-            1 &&
+          new_tc_data
+            .no_of_workshops_equipped_with_modern_tools_and_ready_for_use
+            .value >= 1 &&
           new_tc_data.training_of_ttis_on_the_use_of_newly_installed_tools ===
             'yes'
             ? new_tc_data.training_of_ttis_on_the_use_of_newly_installed_tools
             : 'no'
       }
+
       let existingDoc
       if (new_tc_data.jurisdiction === 'federal') {
         existingDoc = await Ioi_comp1.findOne({
@@ -694,26 +787,35 @@ router.post(
       }
 
       if (existingDoc) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
+        if (req.files && req.files['ttis_status_report_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['ttis_status_report_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
             }
-          })
+          )
         }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
+        if (req.files && req.files['status_report_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['status_report_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
             }
-          })
+          )
         }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
+        if (req.files && req.files['doc_confirming_disbursment_received_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['doc_confirming_disbursment_received_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
             }
-          })
+          )
         }
         return res.status(400).json(`Tc data already uploaded`)
       }
@@ -754,26 +856,35 @@ router.post(
           newDoc.no_of_fully_functioning_upgraded_workshops_in_supported_tc
       })
     } catch (err) {
-      if (req.files && req.files[0]) {
-        fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
+      if (req.files && req.files['ttis_status_report_pdf']) {
+        fs.unlink(
+          `uploads/${req.files['ttis_status_report_pdf'][0].filename}`,
+          unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            }
           }
-        })
+        )
       }
-      if (req.files && req.files[1]) {
-        fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
+      if (req.files && req.files['status_report_pdf']) {
+        fs.unlink(
+          `uploads/${req.files['status_report_pdf'][0].filename}`,
+          unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            }
           }
-        })
+        )
       }
-      if (req.files && req.files[2]) {
-        fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
+      if (req.files && req.files['doc_confirming_disbursment_received_pdf']) {
+        fs.unlink(
+          `uploads/${req.files['doc_confirming_disbursment_received_pdf'][0].filename}`,
+          unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            }
           }
-        })
+        )
       }
       res.status(500).json(`Err message: ${err}`)
     }
@@ -1310,18 +1421,21 @@ router.get(
 
 router.put(
   '/update-post-for-no-of-supported-tc/:post_id',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'report_pdf', maxCount: 1 },
+    { name: 'all_signed_mous_pdf', maxCount: 4 },
+    { name: 'minutes_pdf', maxCount: 4 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
-
       const jurisdiction = req.query.jurisdiction
       const tcType = `${jurisdiction}_tc`
 
       if (items.no_of_mous_signed_with_industry_partners) {
-        items.no_of_mous_signed_with_industry_partners = Number(
-          items.no_of_mous_signed_with_industry_partners
-        )
+        items.no_of_mous_signed_with_industry_partners = {
+          value: Number(items.no_of_mous_signed_with_industry_partners)
+        }
       }
 
       if (!mongoose.Types.ObjectId.isValid(req.params.post_id)) {
@@ -1335,27 +1449,6 @@ router.put(
 
       const parentDocument = await Ioi_comp1.findOne(query)
       if (!parentDocument) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
         return res.status(404).json({ message: 'TC post does not exist' })
       }
 
@@ -1369,67 +1462,28 @@ router.put(
       )
 
       if (!subdocument) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
         return res.status(404).json({ message: 'Subdocument not found' })
       }
 
-      let items_to_add = {}
-      if (!items.sch_ideas_project_team_established) {
-        items_to_add.sch_ideas_project_team_established =
-          subdocument.sch_ideas_project_team_established.value
-      } else {
-        items_to_add.sch_ideas_project_team_established =
+      // Update the subdocument with new data
+      if (items.sch_ideas_project_team_established) {
+        subdocument.sch_ideas_project_team_established.value =
           items.sch_ideas_project_team_established
       }
 
-      if (!items.no_of_mous_signed_with_industry_partners) {
-        items_to_add.no_of_mous_signed_with_industry_partners =
-          subdocument.no_of_mous_signed_with_industry_partners.value
-      } else {
-        items_to_add.no_of_mous_signed_with_industry_partners =
-          items.no_of_mous_signed_with_industry_partners
+      if (items.no_of_mous_signed_with_industry_partners) {
+        subdocument.no_of_mous_signed_with_industry_partners.value =
+          items.no_of_mous_signed_with_industry_partners.value
       }
 
-      if (!items.no_of_times_ciu_met_over_past_year) {
-        items_to_add.no_of_times_ciu_met_over_past_year =
-          subdocument.no_of_times_ciu_met_over_past_year.value
-      } else {
-        items_to_add.no_of_times_ciu_met_over_past_year =
+      if (items.no_of_times_ciu_met_over_past_year) {
+        subdocument.no_of_times_ciu_met_over_past_year.value =
           items.no_of_times_ciu_met_over_past_year
       }
 
-      if (
-        items_to_add.sch_ideas_project_team_established === 'yes' &&
-        items_to_add.no_of_mous_signed_with_industry_partners &&
-        (items_to_add.no_of_times_ciu_met_over_past_year === 'twice' ||
-          'three times' ||
-          'four times')
-      ) {
-        subdocument.count = 1
-      }
-
-      if (req.files && req.files.length > 0) {
-        if (req.files[0] && items.sch_ideas_project_team_established) {
+      if (req.files) {
+        // Handle report_pdf
+        if (req.files['report_pdf'] && req.files['report_pdf'][0]) {
           if (subdocument.sch_ideas_project_team_established.report_pdf) {
             fs.unlink(
               `uploads/${subdocument.sch_ideas_project_team_established.report_pdf}`,
@@ -1440,56 +1494,48 @@ router.put(
               }
             )
           }
-
           subdocument.sch_ideas_project_team_established.report_pdf =
-            req.files[0].filename
-
-          subdocument.sch_ideas_project_team_established.value =
-            items.sch_ideas_project_team_established
+            req.files['report_pdf'][0].filename
         }
+
+        // Handle all_signed_mous_pdf
         if (
-          req.files.length > 1 &&
-          req.files[1] &&
-          items.no_of_mous_signed_with_industry_partners
+          req.files['all_signed_mous_pdf'] &&
+          req.files['all_signed_mous_pdf'].length > 0
         ) {
           if (
             subdocument.no_of_mous_signed_with_industry_partners
               .all_signed_mous_pdf
           ) {
-            fs.unlink(
-              `uploads/${subdocument.no_of_mous_signed_with_industry_partners.all_signed_mous_pdf}`,
-              unlinkErr => {
-                if (unlinkErr) {
-                  console.error(unlinkErr)
-                }
+            subdocument.no_of_mous_signed_with_industry_partners.all_signed_mous_pdf.forEach(
+              file => {
+                fs.unlink(`uploads/${file}`, unlinkErr => {
+                  if (unlinkErr) {
+                    console.error(unlinkErr)
+                  }
+                })
               }
             )
           }
-
           subdocument.no_of_mous_signed_with_industry_partners.all_signed_mous_pdf =
-            req.files[1].filename
-          subdocument.no_of_mous_signed_with_industry_partners.value =
-            items.no_of_mous_signed_with_industry_partners
+            req.files['all_signed_mous_pdf'].map(file => file.filename)
         }
-        if (
-          req.files.length > 2 &&
-          req.files[2] &&
-          items.no_of_times_ciu_met_over_past_year
-        ) {
+
+        // Handle minutes_pdf
+        if (req.files['minutes_pdf'] && req.files['minutes_pdf'].length > 0) {
           if (subdocument.no_of_times_ciu_met_over_past_year.minutes_pdf) {
-            fs.unlink(
-              `uploads/${subdocument.no_of_times_ciu_met_over_past_year.minutes_pdf}`,
-              unlinkErr => {
-                if (unlinkErr) {
-                  console.error(unlinkErr)
-                }
+            subdocument.no_of_times_ciu_met_over_past_year.minutes_pdf.forEach(
+              file => {
+                fs.unlink(`uploads/${file}`, unlinkErr => {
+                  if (unlinkErr) {
+                    console.error(unlinkErr)
+                  }
+                })
               }
             )
           }
           subdocument.no_of_times_ciu_met_over_past_year.minutes_pdf =
-            req.files[2].filename
-          subdocument.no_of_times_ciu_met_over_past_year.value =
-            items.no_of_times_ciu_met_over_past_year
+            req.files['minutes_pdf'].map(file => file.filename)
         }
       }
 
@@ -1500,27 +1546,38 @@ router.put(
         subdocument
       })
     } catch (err) {
-      if (req.files && req.files[0]) {
-        fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
+      // Unlink newly uploaded files if error occurs
+      if (req.files) {
+        if (req.files['report_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['report_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
+            }
+          )
+        }
+        if (req.files['all_signed_mous_pdf']) {
+          req.files['all_signed_mous_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
+            })
+          })
+        }
+        if (req.files['minutes_pdf']) {
+          req.files['minutes_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
+            })
+          })
+        }
       }
-      if (req.files && req.files[1]) {
-        fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
-      if (req.files && req.files[2]) {
-        fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
+      console.error(err)
       res.status(500).json({ message: `Error message: ${err}` })
     }
   })

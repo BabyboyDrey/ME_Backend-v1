@@ -424,12 +424,24 @@ router.get(
       const in_service_data = data.federal_tc.filter(
         obj => obj.service_type === 'In-service'
       )
+      const pre_service_data1 = data.state_tc.filter(
+        obj => obj.service_type === 'Pre-service'
+      )
+      const in_service_data1 = data.state_tc.filter(
+        obj => obj.service_type === 'In-service'
+      )
 
       res.status(200).json({
         Success: true,
         Filtered_data: {
-          pre_service_data,
-          in_service_data
+          federal: {
+            pre_service_data,
+            in_service_data
+          },
+          state: {
+            pre_service_data1,
+            in_service_data1
+          }
         }
       })
     } catch (err) {

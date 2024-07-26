@@ -18,7 +18,7 @@ const ioiSchema = new mongoose.Schema({
               type: Number
             },
             all_signed_mous_pdf: {
-              type: String
+              type: [String]
             }
           },
           no_of_times_ciu_met_over_past_year: {
@@ -26,7 +26,7 @@ const ioiSchema = new mongoose.Schema({
               type: String
             },
             minutes_pdf: {
-              type: String
+              type: [String]
             }
           },
           tc_name: {
@@ -61,7 +61,7 @@ const ioiSchema = new mongoose.Schema({
               type: String
             },
             all_signed_mous_pdf: {
-              type: String
+              type: [String]
             }
           },
           no_of_times_ciu_met_over_past_year: {
@@ -69,7 +69,7 @@ const ioiSchema = new mongoose.Schema({
               type: String
             },
             minutes_pdf: {
-              type: String
+              type: [String]
             }
           },
           tc_name: {
@@ -119,7 +119,7 @@ const ioiSchema = new mongoose.Schema({
             type: Number
           },
         latest_tc_status_report_pdf: {
-          type: String
+          type: [String]
         },
         attendance_sheet_pdf: {
           type: String
@@ -160,7 +160,7 @@ const ioiSchema = new mongoose.Schema({
             type: Number
           },
         latest_tc_status_report_pdf: {
-          type: String
+          type: [String]
         },
         attendance_sheet_pdf: {
           type: String
@@ -201,7 +201,7 @@ const ioiSchema = new mongoose.Schema({
               type: String
             },
             sensitization_pdf: {
-              type: String
+              type: [String]
             }
           },
           gbv_policy_developed_by_school: {
@@ -222,7 +222,7 @@ const ioiSchema = new mongoose.Schema({
             type: String
           },
           reports_showing_addressed_complaints_box_pdf: {
-            type: String
+            type: [String]
           },
           tc_name: {
             type: String,
@@ -248,7 +248,7 @@ const ioiSchema = new mongoose.Schema({
               type: String
             },
             sensitization_pdf: {
-              type: String
+              type: [String]
             }
           },
           gbv_policy_developed_by_school: {
@@ -269,7 +269,7 @@ const ioiSchema = new mongoose.Schema({
             type: String
           },
           reports_showing_addressed_complaints_box_pdf: {
-            type: String
+            type: [String]
           },
           tc_name: {
             type: String,
@@ -336,7 +336,7 @@ const ioiSchema = new mongoose.Schema({
           value: {
             type: Number
           },
-          status_report_pdf: {
+          ttis_status_report_pdf: {
             type: String
           }
         },
@@ -396,7 +396,7 @@ const ioiSchema = new mongoose.Schema({
           value: {
             type: Number
           },
-          status_report_pdf: {
+          ttis_status_report_pdf: {
             type: String
           }
         },
