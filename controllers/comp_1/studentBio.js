@@ -365,4 +365,48 @@ router.get(
   })
 )
 
+// GET REQUESTS FRO FILTERING STUDENTS BY CLASS
+
+router.get(
+  '/get-classified-students',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const found_data = await Student.find({})
+      if (!found_data || found_data.length === 0) {
+        return res.status(404).json('No student data')
+      }
+      const federal_data = found_data[0].federal_tc
+      const state_data = found_data[0].state_tc
+
+      const federal_grouping = federal_data.reduce((acc, curr) => {
+        if (!acc[curr.class]) {
+          acc[curr.class] = [curr]
+        } else {
+          acc[curr.class].push(curr)
+        }
+        return acc
+      }, {})
+      const state_grouping = state_data.reduce((acc, curr) => {
+        if (!acc[curr.class]) {
+          acc[curr.class] = [curr]
+        } else {
+          acc[curr.class].push(curr)
+        }
+        return acc
+      }, {})
+
+      res.status(200).json({
+        federal_grouping,
+        state_grouping
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        message: err.message
+      })
+    }
+  })
+)
+
 module.exports = router
