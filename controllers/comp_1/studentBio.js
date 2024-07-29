@@ -371,7 +371,7 @@ router.get(
   '/get-classified-students',
   asyncErrCatcher(async (req, res) => {
     try {
-      const { school_name, jurisdiction } = req.query
+      const { school_name, jurisdiction, class: className } = req.query
       const found_data = await Student.findOne({
         [`${jurisdiction}_tc`]: {
           $elemMatch: {
@@ -396,8 +396,10 @@ router.get(
           return acc
         }, {})
 
+      const filteredGroup = groupings[className] || []
       res.status(200).json({
-        groupings
+        filteredGroup,
+        filterClass: className
       })
     } catch (err) {
       console.error(err)
