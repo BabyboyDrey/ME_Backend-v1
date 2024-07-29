@@ -371,33 +371,33 @@ router.get(
   '/get-classified-students',
   asyncErrCatcher(async (req, res) => {
     try {
-      const found_data = await Student.find({})
+      const { school_name, jurisdiction } = req.query
+      const found_data = await Student.findOne({
+        [`${jurisdiction}_tc`]: {
+          $elemMatch: {
+            school_name: school_name
+          }
+        }
+      })
+
       if (!found_data || found_data.length === 0) {
         return res.status(404).json('No student data')
       }
-      const federal_data = found_data[0].federal_tc
-      const state_data = found_data[0].state_tc
+      const data = found_data[`${jurisdiction}_tc`]
 
-      const federal_grouping = federal_data.reduce((acc, curr) => {
-        if (!acc[curr.class]) {
-          acc[curr.class] = [curr]
-        } else {
-          acc[curr.class].push(curr)
-        }
-        return acc
-      }, {})
-      const state_grouping = state_data.reduce((acc, curr) => {
-        if (!acc[curr.class]) {
-          acc[curr.class] = [curr]
-        } else {
-          acc[curr.class].push(curr)
-        }
-        return acc
-      }, {})
+      const groupings = data
+        .filter(obj => obj.school_name === school_name)
+        .reduce((acc, curr) => {
+          if (!acc[curr.class]) {
+            acc[curr.class] = [curr]
+          } else {
+            acc[curr.class].push(curr)
+          }
+          return acc
+        }, {})
 
       res.status(200).json({
-        federal_grouping,
-        state_grouping
+        groupings
       })
     } catch (err) {
       console.error(err)
