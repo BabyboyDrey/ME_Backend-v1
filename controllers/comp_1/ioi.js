@@ -70,6 +70,41 @@ function checkAndDeleteFile (filePath, callback) {
   })
 }
 
+async function handleFileUnlinking (files) {
+  if (files) {
+    for (const key in files) {
+      for (const file of files[key]) {
+        await new Promise((resolve, reject) => {
+          checkAndDeleteFile(`uploads/${file.filename}`, err => {
+            if (err) reject(err)
+            else resolve()
+          })
+        })
+      }
+    }
+  }
+}
+
+async function deleteFiles (filePaths) {
+  if (Array.isArray(filePaths)) {
+    for (const filePath of filePaths) {
+      await new Promise((resolve, reject) => {
+        checkAndDeleteFile(`uploads/${filePath}`, err => {
+          if (err) reject(err)
+          else resolve()
+        })
+      })
+    }
+  } else {
+    await new Promise((resolve, reject) => {
+      checkAndDeleteFile(`uploads/${filePaths}`, err => {
+        if (err) reject(err)
+        else resolve()
+      })
+    })
+  }
+}
+
 // POST REQUEST SETTING COOKIES
 
 router.post(
@@ -1585,7 +1620,10 @@ router.put(
 
 router.put(
   '/update-post-no-of-training-programs-delivered-monitored/:post_id',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'attendance_sheet_pdf', maxCount: 1 },
+    { name: 'latest_tc_status_report_pdf', maxCount: 4 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
@@ -1603,18 +1641,23 @@ router.put(
 
       const parentDocument = await Ioi_comp1.findOne(query)
       if (!parentDocument) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
+        if (req.files && req.files['attendance_sheet_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['attendance_sheet_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
             }
-          })
+          )
         }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
+        if (req.files && req.files['latest_tc_status_report_pdf']) {
+          req.files['latest_tc_status_report_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
+            })
           })
         }
         return res.status(404).json({ message: 'TC post does not exist' })
@@ -1627,70 +1670,89 @@ router.put(
       )
 
       if (!subdocument) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
+        if (req.files && req.files['attendance_sheet_pdf']) {
+          fs.unlink(
+            `uploads/${req.files['attendance_sheet_pdf'][0].filename}`,
+            unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
             }
-          })
+          )
         }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
+        if (req.files && req.files['latest_tc_status_report_pdf']) {
+          req.files['latest_tc_status_report_pdf'].forEach(file => {
+            fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+              if (unlinkErr) {
+                console.error(unlinkErr)
+              }
+            })
           })
         }
         return res.status(404).json({ message: 'Subdocument not found' })
       }
 
       const items_to_add = {}
-      if (!items.no_of_industry_partners) {
-        items_to_add.no_of_industry_partners =
-          subdocument.no_of_industry_partners
-      } else {
-        items_to_add.no_of_industry_partners = items.no_of_industry_partners
+
+      items_to_add.no_of_industry_partners =
+        Number(items.no_of_industry_partners) ||
+        0 ||
+        Number(subdocument.no_of_industry_partners) ||
+        0
+      items_to_add.no_of_internship_arrangements =
+        Number(items.no_of_internship_arrangements) ||
+        0 ||
+        Number(subdocument.no_of_internship_arrangements) ||
+        0
+
+      if (
+        items_to_add.no_of_internship_arrangements ||
+        items_to_add.no_of_industry_partners
+      ) {
+        subdocument.count =
+          Number(items_to_add.no_of_internship_arrangements) +
+          Number(items_to_add.no_of_industry_partners)
       }
-
-      if (!items.no_of_internship_arrangements) {
-        items_to_add.no_of_internship_arrangements =
-          subdocument.no_of_internship_arrangements
-      } else {
-        items_to_add.no_of_internship_arrangements =
-          items.no_of_internship_arrangements
-      }
-
-      subdocument.count =
-        Number(items_to_add.no_of_internship_arrangements) +
-        Number(items_to_add.no_of_industry_partners)
-
-      if (req.files && req.files[0]) {
-        if (subdocument.latest_tc_status_report_pdf) {
-          fs.unlink(
-            `uploads/${subdocument.latest_tc_status_report_pdf}`,
-            unlinkErr => {
-              if (unlinkErr) {
-                console.error(unlinkErr)
+      if (req.files) {
+        // Handle attendance_sheet_pdf
+        if (
+          req.files['attendance_sheet_pdf'] &&
+          req.files['attendance_sheet_pdf'][0]
+        ) {
+          if (subdocument.attendance_sheet_pdf) {
+            fs.unlink(
+              `uploads/${subdocument.attendance_sheet_pdf}`,
+              unlinkErr => {
+                if (unlinkErr) {
+                  console.error(unlinkErr)
+                }
               }
-            }
-          )
+            )
+          }
+          subdocument.attendance_sheet_pdf =
+            req.files['attendance_sheet_pdf'][0].filename
         }
-        subdocument.latest_tc_status_report_pdf = req.files[0].filename
-      }
-      if (req.files && req.files[1]) {
-        if (subdocument.attendance_sheet_pdf) {
-          fs.unlink(
-            `uploads/${subdocument.attendance_sheet_pdf}`,
-            unlinkErr => {
-              if (unlinkErr) {
-                console.error(unlinkErr)
-              }
-            }
-          )
+
+        // Handle latest_tc_status_report_pdf
+        if (
+          req.files['latest_tc_status_report_pdf'] &&
+          req.files['latest_tc_status_report_pdf'].length > 0
+        ) {
+          if (subdocument.latest_tc_status_report_pdf) {
+            subdocument.latest_tc_status_report_pdf.forEach(file => {
+              fs.unlink(`uploads/${file}`, unlinkErr => {
+                if (unlinkErr) {
+                  console.error(unlinkErr)
+                }
+              })
+            })
+          }
+          subdocument.latest_tc_status_report_pdf = req.files[
+            'latest_tc_status_report_pdf'
+          ].map(file => file.filename)
         }
-        subdocument.attendance_sheet_pdf = req.files[1].filename
       }
-      Object.assign(subdocument, items)
+      Object.assign(subdocument, items_to_add)
 
       await parentDocument.save()
 
@@ -1699,20 +1761,26 @@ router.put(
         subdocument
       })
     } catch (err) {
-      if (req.files && req.files[0]) {
-        fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
+      if (req.files && req.files['attendance_sheet_pdf']) {
+        fs.unlink(
+          `uploads/${req.files['attendance_sheet_pdf'][0].filename}`,
+          unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            }
           }
+        )
+      }
+      if (req.files && req.files['latest_tc_status_report_pdf']) {
+        req.files['latest_tc_status_report_pdf'].forEach(file => {
+          fs.unlink(`uploads/${file.filename}`, unlinkErr => {
+            if (unlinkErr) {
+              console.error(unlinkErr)
+            }
+          })
         })
       }
-      if (req.files && req.files[1]) {
-        fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
+      console.error(err)
       res.status(500).json({ message: `Error message: ${err}` })
     }
   })
@@ -1720,7 +1788,11 @@ router.put(
 
 router.put(
   '/update-post-no-of-supported-tc-with-reporting-and-referral-mechanisms-for-gbv-affected-youth/:post_id',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'school_gbv_policy_pdf', maxCount: 1 },
+    { name: 'sensitization_pdf', maxCount: 4 },
+    { name: 'reports_showing_addressed_complaints_box_pdf', maxCount: 4 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
@@ -1738,27 +1810,7 @@ router.put(
 
       const parentDocument = await Ioi_comp1.findOne(query).maxTimeMS(20000)
       if (!parentDocument) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
+        await handleFileUnlinking(req.files)
         return res.status(404).json({ message: 'TC post does not exist' })
       }
 
@@ -1772,27 +1824,7 @@ router.put(
       )
 
       if (!subdocument) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
+        await handleFileUnlinking(req.files)
         return res.status(404).json({ message: 'Subdocument not found' })
       }
 
@@ -1810,52 +1842,58 @@ router.put(
 
       if (
         req.files &&
-        req.files[0] &&
+        req.files['sensitization_pdf'] &&
         items.gbv_sensitization_conducted_by_the_school
       ) {
         if (
           subdocument.gbv_sensitization_conducted_by_the_school
             .sensitization_pdf
         ) {
-          const filePath = `uploads/${subdocument.gbv_sensitization_conducted_by_the_school.sensitization_pdf}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error('Error handling file:', err)
-            }
-          })
+          await deleteFiles(
+            subdocument.gbv_sensitization_conducted_by_the_school
+              .sensitization_pdf
+          )
         }
         subdocument.gbv_sensitization_conducted_by_the_school.value =
           items.gbv_sensitization_conducted_by_the_school
         subdocument.gbv_sensitization_conducted_by_the_school.sensitization_pdf =
-          req.files[0].filename
+          req.files['sensitization_pdf'].map(file => file.filename)
         delete items.gbv_sensitization_conducted_by_the_school
       }
-      if (req.files && req.files[1] && items.gbv_policy_published_by_school) {
+      if (
+        req.files &&
+        req.files['school_gbv_policy_pdf'] &&
+        items.gbv_policy_published_by_school
+      ) {
         if (subdocument.gbv_policy_published_by_school.school_gbv_policy_pdf) {
-          const filePath = `uploads/${subdocument.gbv_policy_published_by_school.school_gbv_policy_pdf}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error('Error handling file:', err)
-            }
+          await new Promise((resolve, reject) => {
+            checkAndDeleteFile(
+              `uploads/${subdocument.gbv_policy_published_by_school.school_gbv_policy_pdf}`,
+              err => {
+                if (err) reject(err)
+                else resolve()
+              }
+            )
           })
         }
         subdocument.gbv_policy_published_by_school.value =
           items.gbv_policy_published_by_school
         subdocument.gbv_policy_published_by_school.school_gbv_policy_pdf =
-          req.files[1].filename
+          req.files['school_gbv_policy_pdf'][0].filename
         delete items.gbv_policy_published_by_school
       }
-      if (req.files && req.files[2]) {
+      if (
+        req.files &&
+        req.files['reports_showing_addressed_complaints_box_pdf']
+      ) {
         if (subdocument.reports_showing_addressed_complaints_box_pdf) {
-          const filePath = `uploads/${subdocument.reports_showing_addressed_complaints_box_pdf}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error('Error handling file:', err)
-            }
-          })
+          await deleteFiles(
+            subdocument.reports_showing_addressed_complaints_box_pdf
+          )
         }
-        subdocument.reports_showing_addressed_complaints_box_pdf =
-          req.files[2].filename
+        subdocument.reports_showing_addressed_complaints_box_pdf = req.files[
+          'reports_showing_addressed_complaints_box_pdf'
+        ].map(file => file.filename)
       }
 
       Object.assign(subdocument, items)
@@ -1867,27 +1905,8 @@ router.put(
         subdocument
       })
     } catch (err) {
-      if (req.files && req.files[0]) {
-        fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
-      if (req.files && req.files[1]) {
-        fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
-      if (req.files && req.files[2]) {
-        fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
+      await handleFileUnlinking(req.files)
+      console.error(err)
       res.status(500).json({ message: `Error message: ${err}` })
     }
   })
@@ -1895,7 +1914,11 @@ router.put(
 
 router.put(
   '/update-post-no-of-fully-functioning-upgraded-workshops-in-supported-tc/:post_id',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'doc_confirming_disbursment_received_pdf', maxCount: 1 },
+    { name: 'status_report_pdf', maxCount: 1 },
+    { name: 'ttis_status_report_pdf', maxCount: 1 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
@@ -1913,27 +1936,7 @@ router.put(
 
       const parentDocument = await Ioi_comp1.findOne(query).maxTimeMS(20000)
       if (!parentDocument) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
+        await handleFileUnlinking(req.files)
         return res.status(404).json({ message: 'TC post does not exist' })
       }
 
@@ -1945,27 +1948,7 @@ router.put(
       )
 
       if (!subdocument) {
-        if (req.files && req.files[0]) {
-          fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[1]) {
-          fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
-        if (req.files && req.files[2]) {
-          fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-            if (unlinkErr) {
-              console.error(unlinkErr)
-            }
-          })
-        }
+        await handleFileUnlinking(req.files)
         return res.status(404).json({ message: 'Subdocument not found' })
       }
 
@@ -1999,7 +1982,7 @@ router.put(
         subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       ) {
         items_to_add.no_of_workshops_equipped_with_modern_tools_and_ready_for_use =
-          subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
+          subdocument.no_of_workshops_equipped_with_modern_tools_and.ready_for_use
       }
       if (items.training_of_ttis_on_the_use_of_newly_installed_tools) {
         items_to_add.training_of_ttis_on_the_use_of_newly_installed_tools =
@@ -2028,29 +2011,33 @@ router.put(
 
       if (
         req.files &&
-        req.files[0] &&
+        req.files['doc_confirming_disbursment_received_pdf'] &&
         items.initial_disbursement_of_250kusd_received
       ) {
         if (
           subdocument.initial_disbursement_of_250kusd_received
             .doc_confirming_disbursment_received_pdf
         ) {
-          const filePath = `uploads/${subdocument.initial_disbursement_of_250kusd_received.doc_confirming_disbursment_received_pdf}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error('Error handling file:', err)
-            }
+          await new Promise((resolve, reject) => {
+            checkAndDeleteFile(
+              `uploads/${subdocument.initial_disbursement_of_250kusd_received.doc_confirming_disbursment_received_pdf}`,
+              err => {
+                if (err) reject(err)
+                else resolve()
+              }
+            )
           })
         }
         subdocument.initial_disbursement_of_250kusd_received.value =
           items.initial_disbursement_of_250kusd_received
         subdocument.initial_disbursement_of_250kusd_received.doc_confirming_disbursment_received_pdf =
-          req.files[0].filename
+          req.files['doc_confirming_disbursment_received_pdf'][0].filename
         delete items.initial_disbursement_of_250kusd_received
       }
+
       if (
         req.files &&
-        req.files[1] &&
+        req.files['status_report_pdf'] &&
         items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       ) {
         if (
@@ -2058,39 +2045,46 @@ router.put(
             .no_of_workshops_equipped_with_modern_tools_and_ready_for_use
             .status_report_pdf
         ) {
-          const filePath = `uploads/${subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use.status_report_pdf}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error('Error handling file:', err)
-            }
+          await new Promise((resolve, reject) => {
+            checkAndDeleteFile(
+              `uploads/${subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use.status_report_pdf}`,
+              err => {
+                if (err) reject(err)
+                else resolve()
+              }
+            )
           })
         }
         subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use.value =
           items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
         subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use.status_report_pdf =
-          req.files[1].filename
+          req.files['status_report_pdf'][0].filename
         delete items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       }
+
       if (
         req.files &&
-        req.files[2] &&
+        req.files['ttis_status_report_pdf'] &&
         items.no_of_ttis_trained_on_the_use_of_newly_installed_tools
       ) {
         if (
           subdocument.no_of_ttis_trained_on_the_use_of_newly_installed_tools
             .status_report_pdf
         ) {
-          const filePath = `uploads/${subdocument.no_of_ttis_trained_on_the_use_of_newly_installed_tools.status_report_pdf}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error('Error handling file:', err)
-            }
+          await new Promise((resolve, reject) => {
+            checkAndDeleteFile(
+              `uploads/${subdocument.no_of_ttis_trained_on_the_use_of_newly_installed_tools.status_report_pdf}`,
+              err => {
+                if (err) reject(err)
+                else resolve()
+              }
+            )
           })
         }
         subdocument.no_of_ttis_trained_on_the_use_of_newly_installed_tools.value =
           items.no_of_ttis_trained_on_the_use_of_newly_installed_tools
         subdocument.no_of_ttis_trained_on_the_use_of_newly_installed_tools.status_report_pdf =
-          req.files[2].filename
+          req.files['ttis_status_report_pdf'][0].filename
         delete items.no_of_ttis_trained_on_the_use_of_newly_installed_tools
       }
 
@@ -2103,27 +2097,8 @@ router.put(
         subdocument
       })
     } catch (err) {
-      if (req.files && req.files[0]) {
-        fs.unlink(`uploads/${req.files[0].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
-      if (req.files && req.files[1]) {
-        fs.unlink(`uploads/${req.files[1].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
-      if (req.files && req.files[2]) {
-        fs.unlink(`uploads/${req.files[2].filename}`, unlinkErr => {
-          if (unlinkErr) {
-            console.error(unlinkErr)
-          }
-        })
-      }
+      await handleFileUnlinking(req.files)
+      console.error(err)
       res.status(500).json({ message: `Error message: ${err}` })
     }
   })

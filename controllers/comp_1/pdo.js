@@ -6,6 +6,7 @@ const asyncErrCatcher = require('../../middlewares/asyncErrCatcher')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const checkAndDeleteFile = require('../../utils/checkAndDeleteFile')
+const handleFileUnlinking = require('../../utils/handleFileUnlinking.js')
 
 const createCookie = (user, statusCode, res) => {
   try {
@@ -103,160 +104,12 @@ router.post(
 
 // POST REQUEST
 
-// router.post(
-//   '/make-post-female-enrollment-rate-in-project-supportedTc',
-//   upload.array('pdfs'),
-//   asyncErrCatcher(async (req, res) => {
-//     try {
-//       const items = req.body
-//       const jurisdiction = req.query.jurisdiction
-//       const tcType = `${jurisdiction}_tc`
-
-//       const existing_post = await Pdo_comp1.findOne({
-//         [`female_enrollment_rate_in_project_supportedTc.${tcType}.tc_name`]:
-//           items.tc_name
-//       })
-
-//       if (existing_post) {
-//         if (req.files[0]) {
-//           const filePath = `uploads/${req.files[0].filename}`
-//           checkAndDeleteFile(filePath, err => {
-//             if (err) {
-//               console.error(err)
-//             }
-//           })
-//         }
-//         if (req.files[1]) {
-//           const filePath = `uploads/${req.files[1].filename}`
-//           checkAndDeleteFile(filePath, err => {
-//             if (err) {
-//               console.error(err)
-//             }
-//           })
-//         }
-//         return res.status(400).json('Post data already exists')
-//       }
-//       if (
-//         items.no_of_female_students_enrolled_in_priority_trade &&
-//         items.total_no_of_students_enrolled_in_priority_trades
-//       ) {
-//         items.percentage =
-//           (items.no_of_female_students_enrolled_in_priority_trade /
-//             items.total_no_of_students_enrolled_in_priority_trades) *
-//           100
-//       }
-
-//       if (items.no_of_tvet_sensitizations_conducted_by_school && req.files[0]) {
-//         const new_value = items.no_of_tvet_sensitizations_conducted_by_school
-//         items.no_of_tvet_sensitizations_conducted_by_school = {
-//           value: new_value
-//         }
-//         items.no_of_tvet_sensitizations_conducted_by_school.tc_report_pdf =
-//           req.files[0].filename
-//         console.log(
-//           `fg: ${JSON.stringify(
-//             items.no_of_tvet_sensitizations_conducted_by_school
-//           )}, ${req.files[0]}`
-//         )
-//       }
-//       if (req.files[1]) {
-//         items.student_enrollment_data_doc_pdf = req.files[1].filename
-//       }
-
-//       const created_post = await Pdo_comp1.findOneAndUpdate(
-//         {},
-//         {
-//           $push: {
-//             [`female_enrollment_rate_in_project_supportedTc.${tcType}`]: items
-//           }
-//         },
-//         { new: true, upsert: true }
-//       )
-
-//       const tcTypeArray =
-//         created_post.female_enrollment_rate_in_project_supportedTc[tcType]
-
-//       const matchedEntry = tcTypeArray.find(e => e.tc_name === items.tc_name)
-
-//       const totalTc = await Pdo_comp1.find({
-//         [`female_enrollment_rate_in_project_supportedTc.${tcType}`]: {
-//           $exists: true
-//         }
-//       })
-
-//       let total_females_in_tcType_tc = 0
-//       let total_students_in_tcType_tc = 0
-
-//       totalTc.forEach(doc => {
-//         doc.female_enrollment_rate_in_project_supportedTc.federal_tc.forEach(
-//           entry => {
-//             total_females_in_tcType_tc +=
-//               entry.no_of_female_students_enrolled_in_priority_trade || 0
-
-//             total_students_in_tcType_tc +=
-//               entry.total_no_of_students_enrolled_in_priority_trades || 0
-//           }
-//         )
-
-//         doc.female_enrollment_rate_in_project_supportedTc.state_tc.forEach(
-//           entry => {
-//             total_females_in_tcType_tc +=
-//               entry.no_of_female_students_enrolled_in_priority_trade || 0
-//             total_students_in_tcType_tc +=
-//               entry.total_no_of_students_enrolled_in_priority_trades || 0
-//           }
-//         )
-//       })
-
-//       let percentage_of_female_students_across_tc
-
-//       if (total_students_in_tcType_tc !== 0) {
-//         percentage_of_female_students_across_tc =
-//           (total_females_in_tcType_tc / total_students_in_tcType_tc) * 100
-
-//         await Pdo_comp1.updateOne(
-//           {},
-//           {
-//             $set: {
-//               'female_enrollment_rate_in_project_supportedTc.percentage_of_female_students_across_tc':
-//                 percentage_of_female_students_across_tc
-//             }
-//           }
-//         )
-//       }
-
-//       res.status(200).json({
-//         success: true,
-//         message: 'Post created successfully',
-//         matchedEntry
-//       })
-//     } catch (err) {
-//       if (req.files[0]) {
-//         const filePath = `uploads/${req.files[0].filename}`
-//         checkAndDeleteFile(filePath, err => {
-//           if (err) {
-//             console.error(err)
-//           }
-//         })
-//       }
-//       if (req.files[1]) {
-//         const filePath = `uploads/${req.files[1].filename}`
-//         checkAndDeleteFile(filePath, err => {
-//           if (err) {
-//             console.error(err)
-//           }
-//         })
-//       }
-
-//       console.error(err)
-//       res.status(500).json({ success: false, message: 'Internal Server Error' })
-//     }
-//   })
-// )
-//this api has a bug, first pdf and pdf containinbg obj isnt posted to db
 router.post(
   '/make-post-female-enrollment-rate-in-project-supportedTc',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'tc_report_pdf', maxCount: 1 },
+    { name: 'student_enrollment_data_doc_pdf', maxCount: 1 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
@@ -269,22 +122,7 @@ router.post(
       })
 
       if (existing_post) {
-        if (req.files && req.files[0]) {
-          const filePath = `uploads/${req.files[0].filename}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error(err)
-            }
-          })
-        }
-        if (req.files && req.files[1]) {
-          const filePath = `uploads/${req.files[1].filename}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error(err)
-            }
-          })
-        }
+        await handleFileUnlinking(req.files)
         return res.status(400).json('Post data already exists')
       }
 
@@ -298,21 +136,22 @@ router.post(
           100
       }
 
-      if (items.no_of_tvet_sensitizations_conducted_by_school && req.files[0]) {
+      if (
+        items.no_of_tvet_sensitizations_conducted_by_school &&
+        req.files['tc_report_pdf']
+      ) {
         const new_value = items.no_of_tvet_sensitizations_conducted_by_school
         items.no_of_tvet_sensitizations_conducted_by_school = {
           value: new_value,
-          tc_report_pdf: req.files[0].filename
+          tc_report_pdf: req.files['tc_report_pdf'][0].filename
         }
       }
-      console.log(
-        'jk:',
-        JSON.stringify(items.no_of_tvet_sensitizations_conducted_by_school)
-      )
-      if (req.files && req.files[1]) {
-        items.student_enrollment_data_doc_pdf = req.files[1].filename
+
+      if (req.files['student_enrollment_data_doc_pdf']) {
+        items.student_enrollment_data_doc_pdf =
+          req.files['student_enrollment_data_doc_pdf'][0].filename
       }
-      console.log('Formatted items:', JSON.stringify(items))
+
       const created_post = await Pdo_comp1.findOneAndUpdate(
         {},
         {
@@ -380,23 +219,7 @@ router.post(
         matchedEntry
       })
     } catch (err) {
-      if (req.files && req.files[0]) {
-        const filePath = `uploads/${req.files[0].filename}`
-        checkAndDeleteFile(filePath, err => {
-          if (err) {
-            console.error(err)
-          }
-        })
-      }
-      if (req.files && req.files[1]) {
-        const filePath = `uploads/${req.files[1].filename}`
-        checkAndDeleteFile(filePath, err => {
-          if (err) {
-            console.error(err)
-          }
-        })
-      }
-
+      await handleFileUnlinking(req.files)
       console.error(err)
       res.status(500).json({ success: false, message: 'Internal Server Error' })
     }
@@ -510,35 +333,23 @@ router.get(
 
 router.put(
   '/update-post-female-enrollment-rate-in-project-supportedTc/:post_id',
-  upload.array('pdfs'),
+  upload.fields([
+    { name: 'tc_report_pdf', maxCount: 1 },
+    { name: 'student_enrollment_data_doc_pdf', maxCount: 1 }
+  ]),
   asyncErrCatcher(async (req, res) => {
     try {
       const items = req.body
-      console.log('items:', items)
       const found_post_exists = await Pdo_comp1.findOne({
         [`female_enrollment_rate_in_project_supportedTc.${items.jurisdiction}_tc`]:
           { $elemMatch: { _id: req.params.post_id } }
       })
 
       if (!found_post_exists) {
-        if (req.files && req.files[0]) {
-          const filePath = `uploads/${req.files[0].filename}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error(err)
-            }
-          })
-        }
-        if (req.files && req.files[1]) {
-          const filePath = `uploads/${req.files[1].filename}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error(err)
-            }
-          })
-        }
-
-        return res.status(404).json(`No tc with that id`)
+        await handleFileUnlinking(req.files)
+        return res
+          .status(404)
+          .json(`No tc with that id or invalid jurisdiction`)
       }
 
       const parentDoc =
@@ -548,36 +359,44 @@ router.put(
           `${items.jurisdiction}_tc`
         ]
       const subDoc = subDocs.find(e => e._id.toString() === req.params.post_id)
+
       if (
         req.files &&
-        req.files[0] &&
+        req.files['tc_report_pdf'] &&
         items.no_of_tvet_sensitizations_conducted_by_school
       ) {
         const item_value = items.no_of_tvet_sensitizations_conducted_by_school
         items.no_of_tvet_sensitizations_conducted_by_school = {
           value: item_value,
-          tc_report_pdf: req.files[0].filename
+          tc_report_pdf: req.files['tc_report_pdf'][0].filename
         }
         if (
           subDoc.no_of_tvet_sensitizations_conducted_by_school.tc_report_pdf
         ) {
-          const filePath = `uploads/${subDoc.no_of_tvet_sensitizations_conducted_by_school.tc_report_pdf}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error(err)
-            }
+          await new Promise((resolve, reject) => {
+            checkAndDeleteFile(
+              `uploads/${subDoc.no_of_tvet_sensitizations_conducted_by_school.tc_report_pdf}`,
+              err => {
+                if (err) reject(err)
+                else resolve()
+              }
+            )
           })
         }
       }
-      if (req.files && req.files[1]) {
-        items.student_enrollment_data_doc_pdf = req.files[1].filename
+      if (req.files && req.files['student_enrollment_data_doc_pdf']) {
+        items.student_enrollment_data_doc_pdf =
+          req.files['student_enrollment_data_doc_pdf'][0].filename
 
         if (subDoc.student_enrollment_data_doc_pdf) {
-          const filePath = `uploads/${subDoc.student_enrollment_data_doc_pdf}`
-          checkAndDeleteFile(filePath, err => {
-            if (err) {
-              console.error(err)
-            }
+          await new Promise((resolve, reject) => {
+            checkAndDeleteFile(
+              `uploads/${subDoc.student_enrollment_data_doc_pdf}`,
+              err => {
+                if (err) reject(err)
+                else resolve()
+              }
+            )
           })
         }
       }
@@ -592,19 +411,10 @@ router.put(
           100
       }
 
-      //delete items._id;  //Deleting id before updating the database
-
       console.log('Updating sub-document with items:', items)
 
-      await Pdo_comp1.findOneAndUpdate(
-        {
-          [`female_enrollment_rate_in_project_supportedTc.${items.jurisdiction}_tc._id`]:
-            req.params.post_id
-        },
-        { $set: items },
-        // { $set: { [`female_enrollment_rate_in_project_supportedTc.${items.jurisdiction}_tc.$`]: items } },
-        { upsert: true, new: true }
-      )
+      // Directly updating the sub-document within the found document
+      Object.assign(subDoc, items)
 
       let total_females_in_tcType_tc = 0
       let total_students_in_tcType_tc = 0
@@ -640,22 +450,8 @@ router.put(
         percentage_of_female_students_across_tc
       })
     } catch (err) {
-      if (req.files && req.files[0]) {
-        const filePath = `uploads/${req.files[0].filename}`
-        checkAndDeleteFile(filePath, err => {
-          if (err) {
-            console.error(err)
-          }
-        })
-      }
-      if (req.files && req.files[1]) {
-        const filePath = `uploads/${req.files[1].filename}`
-        checkAndDeleteFile(filePath, err => {
-          if (err) {
-            console.error(err)
-          }
-        })
-      }
+      await handleFileUnlinking(req.files)
+      console.error(err)
       res.status(500).json(`Err: ${err}`)
     }
   })
@@ -981,7 +777,6 @@ router.get(
 
 // PUT REQUESTS FOR UPDATING STATUS FILEDS OF DATA ENTRY POST
 
-// pdo 2 error >>> 500: Err: MongoServerError: Plan executor error during findAndModify :: caused by :: Performing an update on the path '_id' would modify the immutable field '_id'
 router.put(
   '/update-status-for-female-enrollment-rate-in-project-supportedTc/:id',
   asyncErrCatcher(async (req, res) => {
@@ -1018,7 +813,6 @@ router.put(
   })
 )
 
-// pdo 3 error >>> 404: {"error":"Post not found"}
 router.put(
   '/update-status-for-beneficiaries-of-job-focused-interventions/:id',
   asyncErrCatcher(async (req, res) => {
@@ -1054,109 +848,13 @@ router.put(
   })
 )
 
-// GET REQUESTS FOR GETTING SPECIFC PDOS WITH USER2 STATE
-
-// router.get(
-//   '/get-status-for-female-enrollment-rate-in-project-supportedTc-for-specific-state',
-//   asyncErrCatcher(async (req, res) => {
-//     try {
-//       const found_posts_exists = await Pdo_comp1.find({
-//         [`female_enrollment_rate_in_project_supportedTc.${req.query.state}_tc`]:
-//           { $exists: true }
-//       })
-//       const jury_posts =
-//         found_posts_exists[0].female_enrollment_rate_in_project_supportedTc[
-//           `${req.query.state}_tc`
-//         ]
-//       if (!found_posts_exists || jury_posts.length === 0)
-//         return res
-//           .status(400)
-//           .json(
-//             `${
-//               req.query.state.charAt(0).toUpperCase() +
-//               req.query.state.slice(1)
-//             } Tc Array empty`
-//           )
-//       const found_posts = jury_posts
-//         .filter(item => item.state === req.query.state)
-//         .flat()
-
-//       if (!found_posts || found_posts.length === 0)
-//         return res
-//           .status(400)
-//           .json(
-//             `${
-//               req.query.state.charAt(0).toUpperCase() +
-//               req.query.state.slice(1)
-//             } Tc with specified state not existent`
-//           )
-
-//       res.status(200).json({
-//         success: true,
-//         found_posts,
-//         state: req.query.state
-//       })
-//     } catch (err) {
-//       console.error(err)
-//       res.status(500).json({ Error: true, Message: err })
-//     }
-//   })
-// )
-// router.get(
-//   '/get-update-status-for-beneficiaries-of-job-focused-interventions-for-specific-state',
-//   asyncErrCatcher(async (req, res) => {
-//     try {
-//       const found_posts_exists = await Pdo_comp1.find({
-//         [`beneficiaries_of_job_focused_interventions.${req.query.jurisdiction}_tc`]:
-//           { $exists: true }
-//       })
-//       const jury_posts =
-//         found_posts_exists[0].beneficiaries_of_job_focused_interventions[
-//           `${req.query.jurisdiction}_tc`
-//         ]
-//       if (!found_posts_exists || jury_posts.length === 0)
-//         return res
-//           .status(400)
-//           .json(
-//             `${
-//               req.query.jurisdiction.charAt(0).toUpperCase() +
-//               req.query.jurisdiction.slice(1)
-//             } Tc Array empty`
-//           )
-//       const found_posts = jury_posts
-//         .filter(item => item.state === req.query.state)
-//         .flat()
-
-//       if (!found_posts || found_posts.length === 0)
-//         return res
-//           .status(400)
-//           .json(
-//             `${
-//               req.query.jurisdiction.charAt(0).toUpperCase() +
-//               req.query.jurisdiction.slice(1)
-//             } Tc with specified state not existent`
-//           )
-
-//       res.status(200).json({
-//         success: true,
-//         found_posts,
-//         jurisdiction: req.query.jurisdiction
-//       })
-//     } catch (err) {
-//       console.error(err)
-//       res.status(500).json({ Error: true, Message: err })
-//     }
-//   })
-// )
-
-// Modified GET REQUESTS FOR GETTING SPECIFC PDOS WITH USER2 STATE
+//GET REQUESTS FOR GETTING SPECIFC PDOS WITH USER2 STATE
 router.get(
   '/get-status-for-female-enrollment-rate-in-project-supportedTc-for-specific-state',
   asyncErrCatcher(async (req, res) => {
     try {
       const state = req.query.state
 
-      // Find documents where state_tc array exists and has elements
       const found_posts_exists = await Pdo_comp1.find({
         'female_enrollment_rate_in_project_supportedTc.state_tc': {
           $exists: true,
@@ -1168,12 +866,10 @@ router.get(
         return res.status(400).json(`State Tc Array is empty or not found`)
       }
 
-      // Extract and filter the state_tc array based on the provided state
       const jury_posts = found_posts_exists
         .map(doc => doc.female_enrollment_rate_in_project_supportedTc.state_tc)
         .flat()
 
-      // Filter to find posts with the specific state
       const found_posts = jury_posts.filter(item => item.state === state)
 
       if (!found_posts || found_posts.length === 0) {
@@ -1183,7 +879,6 @@ router.get(
       res.status(200).json({
         success: true,
         found_posts
-        // state: state
       })
     } catch (err) {
       console.error(err)
@@ -1198,7 +893,6 @@ router.get(
     try {
       const state = req.query.state
 
-      // Find documents where state_tc array exists and has elements
       const found_posts_exists = await Pdo_comp1.find({
         'beneficiaries_of_job_focused_interventions.state_tc': {
           $exists: true,
@@ -1210,12 +904,10 @@ router.get(
         return res.status(400).json(`State Tc Array is empty or not found`)
       }
 
-      // Extract and filter the state_tc array based on the provided state
       const jury_posts = found_posts_exists
         .map(doc => doc.beneficiaries_of_job_focused_interventions.state_tc)
         .flat()
 
-      // Filter to find posts with the specific state
       const found_posts = jury_posts.filter(item => item.state === state)
 
       if (!found_posts || found_posts.length === 0) {
@@ -1225,7 +917,6 @@ router.get(
       res.status(200).json({
         success: true,
         found_posts
-        // state: state
       })
     } catch (err) {
       console.error(err)
