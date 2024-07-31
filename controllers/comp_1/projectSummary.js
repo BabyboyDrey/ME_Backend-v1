@@ -163,7 +163,9 @@ router.put(
         }
       }
 
-      found_project_summary[query][subDocIndex] = subDoc
+      Object.assign(subDoc, items)
+
+      //  found_project_summary[query][subDocIndex] = subDoc
 
       await found_project_summary.save()
 
