@@ -168,7 +168,7 @@ router.get(
       console.error(err)
       res.status(500).json({
         Error: true,
-        Message: err
+        Message: err.message
       })
     }
   })
@@ -200,7 +200,7 @@ router.get(
       console.error(err)
       res.status(500).json({
         Error: true,
-        Message: err
+        Message: err.message
       })
     }
   })
