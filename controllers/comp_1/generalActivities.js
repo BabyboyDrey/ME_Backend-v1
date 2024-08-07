@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose')
 const asyncErrCatcher = require('../../middlewares/asyncErrCatcher')
 const Generalactivities = require('../../models/comp_1/generalActivities.js')
 
@@ -139,4 +140,70 @@ router.get(
     }
   })
 )
+
+router.get(
+  '/get-ga-by-jurisdiction',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const { jurisdiction } = req.query
+      const found_data = await Generalactivities.findOne({
+        [`${jurisdiction}_tc`]: {
+          $exists: true
+        }
+      })
+
+      if (!found_data || found_data[`${jurisdiction}_tc`].length === 0) {
+        return res.status(404).json({
+          Error: true,
+          message: 'No data found for the specified jurisdiction'
+        })
+      }
+
+      res.status(200).json({
+        success: true,
+        data: found_data[`${jurisdiction}_tc`],
+        jurisdiction
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        Message: err
+      })
+    }
+  })
+)
+
+router.get(
+  '/get-ga-by-id/:id',
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const { jurisdiction } = req.query
+      const found_data = await Generalactivities.findOne({
+        [`${jurisdiction}_tc._id`]: new mongoose.Types.ObjectId(req.params.id)
+      })
+
+      if (!found_data || found_data[`${jurisdiction}_tc`].length === 0) {
+        return res.status(404).json({
+          Error: true,
+          message: 'No data found for the specified jurisdiction'
+        })
+      }
+      const subDocs = found_data[`${jurisdiction}_tc`]
+      const subDoc = subDocs.find(e => e._id.toString() === req.params.id)
+
+      res.status(200).json({
+        success: true,
+        data: subDoc
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({
+        Error: true,
+        Message: err
+      })
+    }
+  })
+)
+
 module.exports = router
