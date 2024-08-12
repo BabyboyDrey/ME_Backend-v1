@@ -2004,7 +2004,7 @@ router.put(
         subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       ) {
         items_to_add.no_of_workshops_equipped_with_modern_tools_and_ready_for_use =
-          subdocument.no_of_workshops_equipped_with_modern_tools_and.ready_for_use
+          subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
       }
       if (items.training_of_ttis_on_the_use_of_newly_installed_tools) {
         items_to_add.training_of_ttis_on_the_use_of_newly_installed_tools =
