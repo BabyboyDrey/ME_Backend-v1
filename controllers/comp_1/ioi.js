@@ -1693,7 +1693,7 @@ router.put(
       }
 
       const items_to_add = {}
-
+Object.assign(items_to_add, items)
       items_to_add.no_of_industry_partners =
         Number(items.no_of_industry_partners) ||
         0 ||
