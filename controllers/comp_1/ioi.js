@@ -1828,6 +1828,13 @@ router.put(
         return res.status(404).json({ message: 'Subdocument not found' })
       }
 
+if(items.gbv_sensitization_conducted_by_the_school){
+  subdocument.gbv_sensitization_conducted_by_the_school.value = items.gbv_sensitization_conducted_by_the_school; 
+}
+if(items.gbv_policy_published_by_school){
+  subdocument.gbv_policy_published_by_school.value = items.gbv_policy_published_by_school; 
+}
+
       if (
         items.gbv_reporting_and_referral_system_for_youths_in_place_at_the_school ===
         'yes'
