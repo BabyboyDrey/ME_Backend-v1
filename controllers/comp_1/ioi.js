@@ -1830,9 +1830,11 @@ router.put(
 
 if(items.gbv_sensitization_conducted_by_the_school){
   subdocument.gbv_sensitization_conducted_by_the_school.value = items.gbv_sensitization_conducted_by_the_school; 
+delete items.gbv_sensitization_conducted_by_the_school
 }
 if(items.gbv_policy_published_by_school){
   subdocument.gbv_policy_published_by_school.value = items.gbv_policy_published_by_school; 
+delete items.gbv_policy_published_by_school
 }
 
       if (
@@ -1957,6 +1959,19 @@ router.put(
       if (!subdocument) {
         await handleFileUnlinking(req.files)
         return res.status(404).json({ message: 'Subdocument not found' })
+      }
+
+      if(items.initial_disbursement_of_250kusd_received){
+        subdocument.initial_disbursement_of_250kusd_received.value = items.initial_disbursement_of_250kusd_received; 
+      delete items.initial_disbursement_of_250kusd_received
+      }
+      if(items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use){
+        subdocument.no_of_workshops_equipped_with_modern_tools_and_ready_for_use.value = items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use; 
+      delete items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use
+      }
+      if(items.no_of_ttis_trained_on_the_use_of_newly_installed_tools){
+        subdocument.no_of_ttis_trained_on_the_use_of_newly_installed_tools.value = items.no_of_ttis_trained_on_the_use_of_newly_installed_tools; 
+      delete items.no_of_ttis_trained_on_the_use_of_newly_installed_tools
       }
 
       if (items.no_of_workshops_equipped_with_modern_tools_and_ready_for_use) {
