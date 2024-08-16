@@ -80,7 +80,7 @@ router.put(
           },
         },
       });
-      console.log("hj", found_mcp);
+
       if (!found_mcp) {
         return res.status(404).json({
           error: true,

@@ -68,9 +68,22 @@ router.get(
         },
         { male: 0, female: 0 }
       );
+      const subDoc_aggreagte_sum =
+        subDoc_aggreagte.male + subDoc_aggreagte.female;
+      const aggr_percentage = {
+        male: parseFloat(
+          ((subDoc_aggreagte.male / subDoc_aggreagte_sum) * 100).toFixed(2)
+        ),
+        female: parseFloat(
+          ((subDoc_aggreagte.female / subDoc_aggreagte_sum) * 100).toFixed(2)
+        ),
+      };
+
       res.status(200).json({
         subDocs,
         subDoc_aggreagte,
+        subDoc_aggreagte_sum,
+        aggr_percentage,
       });
     } catch (err) {
       console.error(err);
@@ -216,6 +229,139 @@ router.get(
   })
 );
 
+// roland want aggregate of male and female in each enrolled.state, enrolled.federal sum to make a new obj called m+f aggregate sum and the sum of each male and female in enrolled.state and enrolled.federal for every document in the arr. do the same for the two pdos in the comp_2
+
+// make changes
+
+router.get(
+  "/get-all-direct-project-beneficiaries-aggregate",
+  asyncErrCatcher(async (req, res) => {
+    try {
+      const found_data = await Pdo_comp2.findOne({
+        direct_project_beneficiaries: {
+          $elemMatch: { $exists: true },
+        },
+      });
+
+      if (!found_data || !found_data.direct_project_beneficiaries) {
+        return res
+          .status(404)
+          .json({ success: false, message: "No data found" });
+      }
+
+      const subDocs = found_data["direct_project_beneficiaries"];
+
+      const aggr_sum_data = subDocs.reduce(
+        (acc, curr) => {
+          if (curr.trainees_in_technical_colleges?.enrolled) {
+            // enrolled
+            acc.trainees_in_technical_colleges.enrolled.state.male +=
+              curr.trainees_in_technical_colleges.enrolled.state?.male || 0;
+            acc.trainees_in_technical_colleges.enrolled.state.female +=
+              curr.trainees_in_technical_colleges.enrolled.state?.female || 0;
+            acc.trainees_in_technical_colleges.enrolled.federal.male +=
+              curr.trainees_in_technical_colleges.enrolled.federal?.male || 0;
+            acc.trainees_in_technical_colleges.enrolled.federal.female +=
+              curr.trainees_in_technical_colleges.enrolled.federal?.female || 0;
+          }
+
+          if (curr.trainees_in_technical_colleges?.graduated) {
+            // graduated
+            acc.trainees_in_technical_colleges.graduated.state.male +=
+              curr.trainees_in_technical_colleges.graduated.state?.male || 0;
+            acc.trainees_in_technical_colleges.graduated.state.female +=
+              curr.trainees_in_technical_colleges.graduated.state?.female || 0;
+            acc.trainees_in_technical_colleges.graduated.federal.male +=
+              curr.trainees_in_technical_colleges.graduated.federal?.male || 0;
+            acc.trainees_in_technical_colleges.graduated.federal.female +=
+              curr.trainees_in_technical_colleges.graduated.federal?.female ||
+              0;
+          }
+
+          if (curr.master_craft_person) {
+            // master craft persons
+            acc.master_craft_person.assessor.male +=
+              curr.master_craft_person.assessor?.male || 0;
+            acc.master_craft_person.assessor.female +=
+              curr.master_craft_person.assessor?.female || 0;
+            acc.master_craft_person.verifiers.male +=
+              curr.master_craft_person.verifiers?.male || 0;
+            acc.master_craft_person.verifiers.female +=
+              curr.master_craft_person.verifiers?.female || 0;
+          }
+
+          return acc;
+        },
+        {
+          trainees_in_technical_colleges: {
+            enrolled: {
+              state: { male: 0, female: 0 },
+              federal: { male: 0, female: 0 },
+            },
+            graduated: {
+              state: { male: 0, female: 0 },
+              federal: { male: 0, female: 0 },
+            },
+          },
+          master_craft_person: {
+            assessor: { male: 0, female: 0 },
+            verifiers: { male: 0, female: 0 },
+          },
+        }
+      );
+
+      const aggr_micro_sum_data = {
+        trainees_in_technical_colleges: {
+          enrolled: {
+            state:
+              aggr_sum_data.trainees_in_technical_colleges.enrolled.state.male +
+              aggr_sum_data.trainees_in_technical_colleges.enrolled.state
+                .female,
+            federal:
+              aggr_sum_data.trainees_in_technical_colleges.enrolled.federal
+                .male +
+              aggr_sum_data.trainees_in_technical_colleges.enrolled.federal
+                .female,
+          },
+          graduated: {
+            state:
+              aggr_sum_data.trainees_in_technical_colleges.graduated.state
+                .male +
+              aggr_sum_data.trainees_in_technical_colleges.graduated.state
+                .female,
+            federal:
+              aggr_sum_data.trainees_in_technical_colleges.graduated.federal
+                .male +
+              aggr_sum_data.trainees_in_technical_colleges.graduated.federal
+                .female,
+          },
+        },
+        master_craft_person: {
+          assessor:
+            aggr_sum_data.master_craft_person.assessor.male +
+            aggr_sum_data.master_craft_person.assessor.female,
+          verifiers:
+            aggr_sum_data.master_craft_person.verifiers.male +
+            aggr_sum_data.master_craft_person.verifiers.female,
+        },
+      };
+
+      res.status(200).json({
+        success: true,
+        subDocs,
+        aggr_sum_data,
+        aggr_micro_sum_data,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: true,
+        message: err.message,
+      });
+    }
+  })
+);
+
 router.put(
   "/update-direct-project-beneficiaries/:id",
   asyncErrCatcher(async (req, res) => {
@@ -262,6 +408,8 @@ router.put(
     }
   })
 );
+
+//not needed
 
 router.get(
   "/get-percentage-of-master-craft-person",
