@@ -14,6 +14,7 @@ const general_activities_comp1_routes = require("./controllers/comp_1/generalAct
 const mcp_comp2_routes = require("./controllers/comp_2/mcp");
 const pdo_comp2_routes = require("./controllers/comp_2/pdo");
 const googleFormsApiRoutes = require("./controllers/comp_1/googleFormsaApis");
+const traineesRoutes = require("./controllers/comp_2/trainees");
 const path = require("path");
 const app = express();
 
@@ -44,6 +45,7 @@ app.use("/api/v1/ga/c1", general_activities_comp1_routes);
 app.use("/api/v1/mcp/c2", mcp_comp2_routes);
 app.use("/api/v1/pdo/c2", pdo_comp2_routes);
 app.use("/api/v1/google-forms/c1", googleFormsApiRoutes);
+app.use("/api/v1/trainees/c2", traineesRoutes);
 connectDb();
 
 process.on("uncaughtException", (err) => {
