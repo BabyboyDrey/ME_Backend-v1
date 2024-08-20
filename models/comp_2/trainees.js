@@ -13,6 +13,6 @@ const traineesSchema = new mongoose.Schema({
   business_name: String,
 });
 
-traineesSchema.index({ business_name: 1 });
+traineesSchema.index({ phone_number: 1 });
 
 module.exports = Trainees = mongoose.model("Trainees", traineesSchema);

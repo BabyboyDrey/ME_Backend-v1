@@ -124,18 +124,21 @@ router.get(
   asyncErrCatcher(async (req, res) => {
     try {
       const { business_name } = req.query;
-      const trainee_data = await Trainees.findOne({
-        business_name: business_name,
-      });
-      if (!trainee_data) {
+      const trainee_data = await Trainees.findOne({});
+      if (trainee_data.length === 0) {
         return res.status(403).json({
           error: true,
-          message: "Trainee does not exist",
+          message: "Trainees do not exist",
         });
       }
+
+      const data = trainee_data.filter(
+        (e) => e.business_name === business_name
+      );
+
       res.status(200).json({
         success: true,
-        trainee_data,
+        data,
       });
     } catch (err) {
       console.error(err);
